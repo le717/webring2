@@ -90,7 +90,13 @@ WSGI_APPLICATION = "webring.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # Define this in settings/local.py
-DATABASES = {}
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "webring.db",
+        "OPTIONS": {"init_command": "PRAGMA foreign_keys=ON;"},
+    }
+}
 
 
 # Password validation
