@@ -5,9 +5,12 @@ from .models import Entry, History, Webring
 
 @admin.register(Webring)
 class WebringAdmin(admin.ModelAdmin):
-    list_display = ["name", "url", "author", "maintainer", "is_active"]
+    list_display = ["name", "slug", "url", "author", "maintainer", "is_active"]
     list_filter = ["is_active"]
-    readonly_fields = ["uuid"]
+    fields = ["name", "slug", "url", "author", "maintainer", "is_active"]
+    prepopulated_fields = {
+        "slug": ["name"],
+    }
     ordering = ["name", "is_active"]
     search_fields = ["name", "url", "author", "maintainer"]
     search_help_text = "Search by webring name, url, author, or maintainer."

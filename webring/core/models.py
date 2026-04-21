@@ -1,6 +1,8 @@
+from typing import Any
 from uuid import uuid4
 
 from django.db import models
+from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
 
 
@@ -16,16 +18,17 @@ class Webring(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.url})"
 
-    uuid = models.UUIDField(
-        unique=True,
-        default=uuid4,
-        verbose_name="UUID",
-        help_text=_(
-            "A unique UUID for this webring. This is auto-generated and cannot be changed."
-        ),
-    )
+    def _asdict(self) -> dict[str, Any]:
+        return {k: v for k, v in model_to_dict(self).items() if k in self.public_fields()}
+
+    @staticmethod
+    def public_fields() -> list[str]:
+        """Define the fields that should be exposed to the public."""
+        return ["name", "url", "author", "maintainer"]
+
     name = models.CharField(max_length=512, help_text=_("The webring's name."))
     url = models.URLField(verbose_name="URL", help_text=_("The URL of the webring."))
+    slug = models.SlugField(unique=True, help_text="The slug used to access this webring.")
     author = models.CharField(
         max_length=512, blank=True, default="", help_text=_("The primary author of the webring.")
     )
@@ -55,6 +58,29 @@ class Entry(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def _asdict(self) -> dict[str, Any]:
+        # We must be careful to properly extract the datetime fields, as they are excluded
+        # by `model_to_dict`
+        return {
+            k: getattr(self, k)
+            for k in [f.name for f in self._meta.get_fields()]
+            if k in self.public_fields()
+        }
+
+    @staticmethod
+    def public_fields() -> list[str]:
+        """Define the fields that should be exposed to the public."""
+        return [
+            "title",
+            "description",
+            "url",
+            "uuid",
+            "is_dead",
+            "is_web_archive",
+            "date_added",
+            "date_last_updated",
+        ]
 
     uuid = models.UUIDField(
         unique=True,
