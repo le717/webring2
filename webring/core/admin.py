@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Entry, History, Webring
+from .models import Entry, LinkrotHistory, Webring
 
 
 @admin.register(Webring)
@@ -16,8 +16,8 @@ class WebringAdmin(admin.ModelAdmin):
     search_help_text = "Search by webring name, url, author, or maintainer."
 
 
-class EntryHistoryInline(admin.TabularInline):
-    model = History
+class LinkrotHistoryInline(admin.TabularInline):
+    model = LinkrotHistory
 
     def has_add_permission(self, *args, **kwargs) -> bool:
         return False
@@ -31,7 +31,7 @@ class EntryHistoryInline(admin.TabularInline):
 
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
-    inlines = [EntryHistoryInline]
+    inlines = [LinkrotHistoryInline]
     list_display = ["title", "url", "is_dead", "is_web_archive", "instance"]
     fields = ["instance", "url", "title", "description", "is_dead", "is_web_archive"]
     search_fields = ["title", "description", "url"]
@@ -39,15 +39,3 @@ class EntryAdmin(admin.ModelAdmin):
     autocomplete_fields = ["instance"]
     ordering = ["instance", "title"]
     search_help_text = "Search by entry title, description, or URL."
-
-
-# @admin.register(History)
-# class HistoryAdmin(admin.ModelAdmin):
-#     def has_add_permission(self, *args, **kwargs) -> bool:
-#         return False
-
-#     def has_change_permission(self, *args, **kwargs) -> bool:
-#         return False
-
-#     def has_delete_permission(self, *args, **kwargs) -> bool:
-#         return False

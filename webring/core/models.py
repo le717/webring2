@@ -6,7 +6,7 @@ from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
 
 
-__all__ = ["Entry", "History", "Webring"]
+__all__ = ["Entry", "LinkrotHistory", "Webring"]
 
 
 class Webring(models.Model):
@@ -123,7 +123,7 @@ class Entry(models.Model):
     )
 
 
-class History(models.Model):
+class LinkrotHistory(models.Model):
     class Meta:
         verbose_name = "Entry history"
         verbose_name_plural = "Entry histories"
