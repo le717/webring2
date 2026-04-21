@@ -129,6 +129,20 @@ class LinkrotHistory(models.Model):
         verbose_name_plural = "Entry histories"
         db_table_comment = _("Audit log of linkrot checks.")
 
+    def _asdict(self) -> dict[str, Any]:
+        # We must be careful to properly extract the datetime fields, as they are excluded
+        # by `model_to_dict`
+        return {
+            k: getattr(self, k)
+            for k in [f.name for f in self._meta.get_fields()]
+            if k in self.public_fields()
+        }
+
+    @staticmethod
+    def public_fields() -> list[str]:
+        """Define the fields that should be exposed to the public."""
+        return ["date_added", "url", "was_alive", "message"]
+
     date_added = models.DateTimeField(
         auto_now_add=True, help_text=_("The datetime this check occurred.")
     )
