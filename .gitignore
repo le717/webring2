@@ -11,3 +11,4 @@ wheels/
 
 *.sqlite3
 *.db
+webring/settings/local.py

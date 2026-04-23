@@ -20,10 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-j=^2h=970f5-=p^i-(m82s+ake-r_%bs@tog_46lt1o9i*g4x2"
+# NOTE: Set in `settings/local.py`
+SECRET_KEY = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1"]
 
@@ -83,7 +84,7 @@ TEMPLATES = [
         },
     },
 ]
-
+FORMS_URLFIELD_ASSUME_HTTPS = True
 WSGI_APPLICATION = "webring.wsgi.application"
 
 
@@ -93,7 +94,8 @@ WSGI_APPLICATION = "webring.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "webring.db",
+        # TODO: might need ".."?
+        "NAME": BASE_DIR / "database"/ "webring.db",
         "OPTIONS": {"init_command": "PRAGMA foreign_keys=ON;"},
     }
 }
@@ -129,11 +131,12 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# App-wide webring filtering defaults
+# App-wide webring filtering defaults. Override these in `settings/local.py` if desired
 FILTER_INCLUDE_DEAD = True
 FILTER_INCLUDE_ORIGIN = False
 FILTER_INCLUDE_WEB_ARCHIVE = True
+TIMES_FAILED_THRESHOLD = 10
 
-# Discord channel logging support. ProTip(tm): set the webhook URL in settings/local.py
+# Discord channel logging support. NOTE: set the webhook URL in `settings/local.py`
 DISCORD_LOGGING_ENABLED = False
 DISCORD_WEBHOOK_URL = ""
