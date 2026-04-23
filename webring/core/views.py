@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from typing import Any
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.views.generic import DetailView, ListView
@@ -16,11 +17,19 @@ class WebringListView(ListView):
     paginate_by = 15
     http_method_names = ["head", "get"]
     qs_filters = {
-        "include_dead": True,
-        "include_origin": False,
-        "include_web_archive": True,
+        # TODO: Do I need these?
+        # "include_dead": True,
+        # "include_origin": False,
+        # "include_web_archive": True,
         "origin": "",
     }
+
+    @staticmethod
+    def truthy_str_to_bool(val: bool | str) -> bool:
+        """Convert truthy strings to a Boolean value."""
+        if isinstance(val, bool):
+            return val
+        return val.lower() in {"y", "yes", "t", "true", "o", "one", "1"}
 
     def get_queryset(self) -> QuerySet:
         filters: dict[str, bool] = {}
@@ -40,11 +49,16 @@ class WebringListView(ListView):
         return qs.filter(**filters)
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
-        # Respect any filtering arguments provided in the request
-        self.qs_filters["include_origin"] = request.GET.get("include_origin", "no").lower() != "no"
-        self.qs_filters["include_dead"] = request.GET.get("include_dead", "yes").lower() == "yes"
-        self.qs_filters["include_web_archive"] = (
-            request.GET.get("include_web_archive", "yes").lower() == "yes"
+        # Respect any filtering arguments provided in the request, falling back
+        # to app-level defaults if they are not provided
+        self.qs_filters["include_origin"] = self.truthy_str_to_bool(
+            request.GET.get("include_origin", settings.FILTER_INCLUDE_ORIGIN)
+        )
+        self.qs_filters["include_dead"] = self.truthy_str_to_bool(
+            request.GET.get("include_dead", settings.FILTER_INCLUDE_DEAD)
+        )
+        self.qs_filters["include_web_archive"] = self.truthy_str_to_bool(
+            request.GET.get("include_web_archive", settings.FILTER_INCLUDE_WEB_ARCHIVE)
         )
 
         # Remove the site making the request from the result set if told to

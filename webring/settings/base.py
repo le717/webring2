@@ -128,3 +128,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# App-wide webring filtering defaults
+FILTER_INCLUDE_DEAD = True
+FILTER_INCLUDE_ORIGIN = False
+FILTER_INCLUDE_WEB_ARCHIVE = True
+
+# Discord channel logging support. ProTip(tm): set the webhook URL in settings/local.py
+DISCORD_LOGGING_ENABLED = False
+DISCORD_WEBHOOK_URL = ""
