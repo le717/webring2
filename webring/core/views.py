@@ -13,7 +13,7 @@ __all__ = ["EntryView", "WebringListView"]
 
 
 class WebringListView(ListView):
-    model = Webring
+    model = Entry
     paginate_by = 15
     http_method_names = ("head", "get")
     qs_filters: dict[str, bool | str] = {"origin": ""}
@@ -25,21 +25,25 @@ class WebringListView(ListView):
             return val
         return val.lower() in {"y", "yes", "t", "true", "o", "one", "1"}
 
+    def get_webring(self) -> Webring | None:
+        """Attempt to find a webring with the given slug."""
+        return Webring.objects.filter(slug=self.kwargs["ring"]).first()
+
     def get_queryset(self) -> QuerySet:
-        filters: dict[str, bool] = {}
-        qs = super().get_queryset().filter(slug=self.kwargs["ring"]).prefetch_related("entries")
+        filters: dict[str, bool | str] = {}
+        qs = super().get_queryset().filter(instance__slug=self.kwargs["ring"])
 
         # Filter out the site in the entry we are on. Make sure we normalize the casing of the two
         # URLs to better ensure we filter correctly. See Django docs on SQLite support
         # https://docs.djangoproject.com/en/6.0/ref/databases/#substring-matching-and-case-sensitivity
         if not self.qs_filters["include_origin"]:
-            qs = qs.exclude(entries__url=self.qs_filters["origin"].lower())
+            qs = qs.exclude(url=self.qs_filters["origin"].lower())
 
         # Filter out dead and/or Web Archive only links
         if not self.qs_filters["include_dead"]:
-            filters["entries__is_dead"] = False
+            filters["is_dead"] = False
         if not self.qs_filters["include_web_archive"]:
-            filters["entries__is_web_archive"] = False
+            filters["is_web_archive"] = False
         return qs.filter(**filters)
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
@@ -59,15 +63,13 @@ class WebringListView(ListView):
         if not self.qs_filters["include_origin"]:
             self.qs_filters["origin"] = request.headers.get("Origin", "")
 
-        # TODO: always return meta even if no entries
-        # Handle not finding a webring by the given slug
-        if not (qs := self.get_queryset()):
+        # Handle not finding a webring with the given slug
+        if (webring := self.get_webring()) is None:
             return JsonResponse({}, status=HTTPStatus.NOT_FOUND)
 
-        # Build up the response data
-        obj = qs.get()
-        entries = [entry._asdict() for entry in obj.entries.all()]
-        return JsonResponse({"meta": obj._asdict(), "entries": entries}, status=HTTPStatus.OK)
+        # Build up the response data, which includes not finding any entries in the given webring
+        entries = [entry._asdict() for entry in self.get_queryset().all()]
+        return JsonResponse({"meta": webring._asdict(), "entries": entries}, status=HTTPStatus.OK)
 
 
 class EntryView(DetailView):
