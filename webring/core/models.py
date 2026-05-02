@@ -43,7 +43,9 @@ class Webring(SoftDeleteModel):
     description = models.TextField(
         blank=True,
         default="",
-        help_text=_("A brief description of the webring's purpose or intention."),
+        help_text=_(
+            "A brief description of the webring's purpose or intention. Should be short(er)."
+        ),
     )
     api_key = models.CharField(
         max_length=512,

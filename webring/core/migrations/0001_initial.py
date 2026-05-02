@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                     models.TextField(
                         blank=True,
                         default="",
-                        help_text="A brief description of the webring's purpose or intention.",
+                        help_text="A brief description of the webring's purpose or intention. Should be short(er).",
                     ),
                 ),
                 (
