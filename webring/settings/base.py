@@ -90,12 +90,11 @@ WSGI_APPLICATION = "webring.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# Define this in settings/local.py
+# Change this as needed in settings/local.py
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        # TODO: might need ".."?
-        "NAME": BASE_DIR / "database"/ "webring.db",
+        "NAME": (BASE_DIR / ".." / "database" / "webring.db").resolve(),
         "OPTIONS": {"init_command": "PRAGMA foreign_keys=ON;"},
     }
 }
@@ -105,18 +104,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": ("django.contrib.auth.password_validation.UserAttributeSimilarityValidator"),
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
