@@ -23,7 +23,8 @@ The following items are new or different in Webring2:
 * Multiple rings are supported by a single hosted instance, rather than one ring per instance
 * Rings are identifiable by slugs, rather than UUIDs
 * Web-based admin interface for management of rings and entries
-* Rate-limiting on endpoints, to help prevent flooding and DDOS attacks
+* Rate-limiting on endpoints, to help prevent flooding and DDoS attacks
+* Webring and entry soft-deletion, in case of accidental removals
 
 # NOTE: Nearly everything past this point is not yet relevant to this project
 

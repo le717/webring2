@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_admin_reset",
     "auditlog",
+    "django_softdelete",
     "webring.core",
 ]
 

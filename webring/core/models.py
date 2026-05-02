@@ -5,12 +5,13 @@ from uuid import uuid4
 from django.db import models
 from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
+from django_softdelete.models import SoftDeleteModel
 
 
 __all__ = ["Entry", "LinkrotHistory", "Webring"]
 
 
-class Webring(models.Model):
+class Webring(SoftDeleteModel):
     """Represent a single webring instance."""
 
     class Meta:
@@ -57,7 +58,7 @@ class Webring(models.Model):
     )
 
 
-class Entry(models.Model):
+class Entry(SoftDeleteModel):
     class Meta:
         verbose_name_plural = "Entries"
         db_table_comment = _("Store the entries for an individual webring.")

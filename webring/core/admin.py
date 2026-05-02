@@ -1,11 +1,21 @@
 from django.contrib import admin
+from django_softdelete.admin import GlobalObjectsModelAdmin
 
 from .models import Entry, LinkrotHistory, Webring
 
 
 @admin.register(Webring)
-class WebringAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "url", "author", "maintainer", "is_active"]
+class WebringAdmin(GlobalObjectsModelAdmin):
+    list_display = [
+        "name",
+        "slug",
+        "url",
+        "author",
+        "maintainer",
+        "is_active",
+        "is_deleted",
+        "deleted_at",
+    ]
     list_filter = ["is_active"]
     fields = ["name", "slug", "url", "author", "maintainer", "description", "is_active"]
     prepopulated_fields = {"slug": ["name"]}
@@ -28,12 +38,20 @@ class LinkrotHistoryInline(admin.TabularInline):
 
 
 @admin.register(Entry)
-class EntryAdmin(admin.ModelAdmin):
+class EntryAdmin(GlobalObjectsModelAdmin):
     inlines = [LinkrotHistoryInline]
-    list_display = ["title", "url", "is_dead", "is_web_archive", "instance"]
+    list_display = [
+        "title",
+        "url",
+        "is_dead",
+        "is_web_archive",
+        "is_deleted",
+        "deleted_at",
+        "instance",
+    ]
     fields = ["instance", "url", "title", "description", "is_dead", "is_web_archive"]
-    search_fields = ["title", "description", "url"]
     readonly_fields = ["uuid"]
     autocomplete_fields = ["instance"]
     ordering = ["instance", "title"]
+    search_fields = ["title", "description", "url"]
     search_help_text = "Search by entry title, description, or URL."
