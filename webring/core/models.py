@@ -1,6 +1,7 @@
+from secrets import token_hex
 from typing import Any
 from uuid import uuid4
-from secrets import token_hex
+
 from django.db import models
 from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +25,7 @@ class Webring(models.Model):
     @staticmethod
     def public_fields() -> list[str]:
         """Define the fields that should be exposed to the public."""
-        return ["name", "url", "author", "maintainer"]
+        return ["name", "url", "description", "author", "maintainer"]
 
     name = models.CharField(max_length=512, help_text=_("The webring's name."))
     url = models.URLField(verbose_name="URL", help_text=_("The URL of the webring."))
@@ -37,6 +38,11 @@ class Webring(models.Model):
         blank=True,
         default="",
         help_text=_("The primary maintainer of the maintainer."),
+    )
+    description = models.TextField(
+        blank=True,
+        default="",
+        help_text=_("A brief description of the webring's purpose or intention."),
     )
     api_key = models.CharField(
         max_length=512,

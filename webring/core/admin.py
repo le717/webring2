@@ -7,10 +7,8 @@ from .models import Entry, LinkrotHistory, Webring
 class WebringAdmin(admin.ModelAdmin):
     list_display = ["name", "slug", "url", "author", "maintainer", "is_active"]
     list_filter = ["is_active"]
-    fields = ["name", "slug", "url", "author", "maintainer", "is_active"]
-    prepopulated_fields = {
-        "slug": ["name"],
-    }
+    fields = ["name", "slug", "url", "author", "maintainer", "description", "is_active"]
+    prepopulated_fields = {"slug": ["name"]}
     ordering = ["name", "is_active"]
     search_fields = ["name", "url", "author", "maintainer"]
     search_help_text = "Search by webring name, url, author, or maintainer."
