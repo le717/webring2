@@ -1,6 +1,6 @@
 from typing import Any
 from uuid import uuid4
-
+from secrets import token_hex
 from django.db import models
 from django.forms import model_to_dict
 from django.utils.translation import gettext_lazy as _
@@ -41,7 +41,7 @@ class Webring(models.Model):
     api_key = models.CharField(
         max_length=512,
         blank=True,
-        default=uuid4,
+        default=token_hex,
         verbose_name="Admin API key",
         help_text="The admin API key for accessing protected routes.",
     )
