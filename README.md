@@ -3,11 +3,10 @@
 > Because everything on the Web eventually loops back onto itself.
 
 ## Features
-
-- Create, update, view, and delete entries
-- Automatically provided JavaScript to embed a simple rendering of all entries
-- Linkrot checking, with Web Archive fallback url for dead links (when possible)
-- Optional linkrot event logging to [Discord](https://discord.com/) channel
+- Multiple webrings per application instance
+- ~~Automatically provided JavaScript to embed a simple rendering of all entries~~
+- ~~Linkrot checking, with Web Archive fallback url for dead links (when possible)~~
+- ~~Optional linkrot event logging to [Discord](https://discord.com/) channel~~
 
 > ℹ️ **Note** <br>
 If you are wanting to learn how to run an instance of Webring2 yourself, jump to [Development](#development).
@@ -30,7 +29,6 @@ Due to these changes, there is no direct upgrade path from the original webring 
 entries will need to be manually added or scripted over to the new platform.
 
 ### Filtering entries
-
 Filtering options are available to restrict the requested webring's entries. These filters are
 supported on both the root URL and the simple embed endpoints. They are provided through query
 parameters to the URLs.

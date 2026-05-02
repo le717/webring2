@@ -6,7 +6,7 @@ from typing import Any
 from django.conf import settings
 from django.db.models import QuerySet
 from django.http import HttpRequest, JsonResponse
-from django.views.generic import DetailView, ListView
+from django.views.generic import CreateView, DetailView, ListView
 
 from .models import Entry, Webring
 
@@ -14,7 +14,7 @@ from .models import Entry, Webring
 __all__ = ["EntryView", "WebringListView"]
 
 
-def get_app_info() -> dict:
+def get_app_info() -> dict[str, str]:
     """Provide basic webring2 application information for a response."""
     pyproject = tomllib.loads(Path("pyproject.toml").read_text())
     return {
@@ -25,6 +25,7 @@ def get_app_info() -> dict:
 
 class WebringListView(ListView):
     model = Entry
+    ordering = "title"
     paginate_by = 15
     http_method_names = ("head", "get")
     qs_filters: dict[str, bool | str] = {"origin": ""}
@@ -79,10 +80,15 @@ class WebringListView(ListView):
             return JsonResponse({"meta": get_app_info()}, status=HTTPStatus.NOT_FOUND)
 
         # Build up the response data, which includes not finding any entries in the given webring
-        entries = [entry._asdict() for entry in self.get_queryset().all()]
+        entries = [
+            entry._asdict() for entry in self.get_queryset().order_by(self.get_ordering()).all()
+        ]
         return JsonResponse(
             {"meta": webring._asdict() | get_app_info(), "entries": entries}, status=HTTPStatus.OK
         )
+
+
+class EntryCreateView(CreateView): ...
 
 
 class EntryView(DetailView):
