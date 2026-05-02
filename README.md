@@ -26,6 +26,26 @@ The following items are new or different in Webring2:
 * Rate-limiting on endpoints, to help prevent flooding and DDoS attacks
 * Webring and entry soft-deletion, in case of accidental removals
 
+Due to these changes, there is no direct upgrade path from the original webring platform. All
+entries will need to be manually added or scripted over to the new platform.
+
+### Filtering entries
+
+Filtering options are available to restrict the requested webring's entries. These filters are
+supported on both the root URL and the simple embed endpoints. They are provided through query
+parameters to the URLs.
+
+Filtering out the site requesting the webring from the webring entries requires the HTTP `ORIGIN`
+header to be properly set for the request.
+
+- `include_dead: bool = "yes"`: Include entries that have been determined to be dead links
+- `include_origin: bool = "no"`: Remove the site requesting the webring from the entries, if present
+- `include_web_archive: bool = "yes"`: Include entries that can only be accessed through
+  the Web Archive
+
+These default values can also be set globally in the app configuration but will be overridden by
+individual requests.
+
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
 ### Rotting links checking
@@ -51,24 +71,6 @@ makes the aforementioned `POST` request and schedule it to automatically run via
 
 Starting with version 1.4.1, a full history of linkrot checks are available for individual entries
 by making an authenticated `GET` request to `/linkrot/<uuid>/history`.
-
-### Filtering webring entries
-
-Starting with version 1.3.0, new filtering options are available to restrict the provided webring
-entries. These filters are supported on both the root URL and the simple embed endpoints. These
-options are provided through query parameters to the URLs.
-
-Filtering out the site requesting the webring from the webring entries requires the HTTP `ORIGIN`
-header to be properly set for the request.
-
-- `include_dead: bool = "yes"`: Include entries that have been determined to be dead links
-- `exclude_origin: bool = "yes"`: Remove the site requesting the webring from the entries,
-if present
-- `include_web_archive: bool = "yes"`: Include entries that can only be accessed through
-  the Web Archive (added in version 1.4.0)
-
-These values can also be set globally through the app configuration but will be overridden by
-individual requests.
 
 ### Automatic simple embed
 
