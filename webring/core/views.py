@@ -15,14 +15,8 @@ __all__ = ["EntryView", "WebringListView"]
 class WebringListView(ListView):
     model = Webring
     paginate_by = 15
-    http_method_names = ["head", "get"]
-    qs_filters = {
-        # TODO: Do I need these?
-        # "include_dead": True,
-        # "include_origin": False,
-        # "include_web_archive": True,
-        "origin": "",
-    }
+    http_method_names = ("head", "get")
+    qs_filters: dict[str, bool | str] = {"origin": ""}
 
     @staticmethod
     def truthy_str_to_bool(val: bool | str) -> bool:
@@ -35,11 +29,11 @@ class WebringListView(ListView):
         filters: dict[str, bool] = {}
         qs = super().get_queryset().filter(slug=self.kwargs["ring"]).prefetch_related("entries")
 
-        # Filter out the site in the entry we are on.
-        # Make sure we normalize the casing of the two URLs to better ensure we filter correctly
-        # TODO: check on case sensitivity with SQLite and if needed, impl the comment above
+        # Filter out the site in the entry we are on. Make sure we normalize the casing of the two
+        # URLs to better ensure we filter correctly. See Django docs on SQLite support
+        # https://docs.djangoproject.com/en/6.0/ref/databases/#substring-matching-and-case-sensitivity
         if not self.qs_filters["include_origin"]:
-            qs = qs.exclude(entries__url__iexact=self.qs_filters["origin"])
+            qs = qs.exclude(entries__url=self.qs_filters["origin"].lower())
 
         # Filter out dead and/or Web Archive only links
         if not self.qs_filters["include_dead"]:

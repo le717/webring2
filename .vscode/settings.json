@@ -3,7 +3,7 @@
     "UV_LINK_MODE": "copy"
   },
   "ruff.enable": true,
-  "ruff.importStrategy": "fromEnvironment",
+  "ruff.importStrategy": "useBundled",
   "ruff.fixAll": true,
   "ruff.organizeImports": true,
   "ruff.codeAction.fixViolation": {
@@ -15,10 +15,12 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.codeActionsOnSave": {
-      "source.fixAll": "explicit"
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
     }
   },
   "[toml]": {
     "editor.formatOnSave": true,
-  }
+  },
+  "ruff.format.preview": true
 }

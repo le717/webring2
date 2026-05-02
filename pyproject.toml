@@ -3,7 +3,7 @@ name = "webring2"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
     "django>=5.2.7",
     "django-admin-reset>=0.7.3",
@@ -28,16 +28,16 @@ line-length = 100
 preview = true
 extend-ignore = ["DJ008", "DJ012"]
 extend-select = [
-    "BLE",    # flake8-blind-except
-    "C4",     # flake8-comprehensions
-    "DJ",     # django
-    "I",      # isort
-    "PTH",    # flake8-use-pathlib
-    "RET",    # flake8-return
-    "SIM",    # flake8-simplify
-    "TD",     # flake8-todos
-    "UP",     # pyupgrade
-    "RUF022", # unsorted-dunder-all
+    "BLE", # flake8-blind-except
+    "C4",  # flake8-comprehensions
+    "DJ",  # django
+    "I",   # isort
+    "PTH", # flake8-use-pathlib
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "TD",  # flake8-todos
+    "UP",  # pyupgrade
+    "RUF", # ruff-specific
 ]
 
 [tool.ruff.format]
