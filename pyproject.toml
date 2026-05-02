@@ -15,6 +15,10 @@ dependencies = [
     "httpx>=0.28.1",
     "django-smart-ratelimit>=2.2.1",
 ]
+[project.urls]
+homepage = "https://github.com/le717/webring2"
+source = "https://github.com/le717/webring2.git"
+changelog = "https://github.com/le717/webring2/blob/main/CHANGES.md"
 
 [dependency-groups]
 dev = ["uv", "ruff"]

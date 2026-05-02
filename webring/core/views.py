@@ -1,4 +1,6 @@
+import tomllib
 from http import HTTPStatus
+from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -10,6 +12,15 @@ from .models import Entry, Webring
 
 
 __all__ = ["EntryView", "WebringListView"]
+
+
+def get_app_info() -> dict:
+    """Provide basic webring2 application information for a response."""
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text())
+    return {
+        "software": pyproject["project"]["urls"]["homepage"],
+        "version": pyproject["project"]["version"],
+    }
 
 
 class WebringListView(ListView):
@@ -65,11 +76,13 @@ class WebringListView(ListView):
 
         # Handle not finding a webring with the given slug
         if (webring := self.get_webring()) is None:
-            return JsonResponse({}, status=HTTPStatus.NOT_FOUND)
+            return JsonResponse({"meta": get_app_info()}, status=HTTPStatus.NOT_FOUND)
 
         # Build up the response data, which includes not finding any entries in the given webring
         entries = [entry._asdict() for entry in self.get_queryset().all()]
-        return JsonResponse({"meta": webring._asdict(), "entries": entries}, status=HTTPStatus.OK)
+        return JsonResponse(
+            {"meta": webring._asdict() | get_app_info(), "entries": entries}, status=HTTPStatus.OK
+        )
 
 
 class EntryView(DetailView):
