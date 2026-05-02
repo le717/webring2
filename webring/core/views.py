@@ -1,11 +1,13 @@
+import dataclasses
 import tomllib
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
 from django.conf import settings
+from django.core.paginator import Page
 from django.db.models import QuerySet
-from django.http import HttpRequest, JsonResponse
+from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
 
 from .models import Entry, Webring
@@ -23,10 +25,39 @@ def get_app_info() -> dict[str, str]:
     }
 
 
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class WebringListResponse:
+    """Model a webring's list response."""
+
+    meta: Webring | None
+    page: Page | None = None
+    entries: list[dict[str, Any]] = dataclasses.field(default_factory=list)
+    app: dict[str, str] = dataclasses.field(default_factory=get_app_info)
+
+    def _asdict(self) -> dict:
+        d = dataclasses.asdict(self)
+        d["meta"] = d["meta"]._asdict() if d["meta"] else None
+
+        # Build out pagination information
+        d["page"] = (
+            None
+            if d["page"] is None
+            else {
+                "total_pages": d["page"].paginator.num_pages,
+                "has_prev_page": d["page"].has_previous(),
+                "has_next_page": d["page"].has_next(),
+                "current_page": d["page"].number,
+                "prev_page": d["page"].previous_page_number() if d["page"].has_previous() else None,
+                "next_page": d["page"].next_page_number() if d["page"].has_next() else None,
+            }
+        )
+        return d
+
+
 class WebringListView(ListView):
     model = Entry
     ordering = "title"
-    paginate_by = 15
+    paginate_by = settings.FILTER_ENTRIES_PER_PAGE
     http_method_names = ("head", "get")
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
@@ -77,14 +108,36 @@ class WebringListView(ListView):
 
         # Handle not finding a webring with the given slug
         if (webring := self.get_webring()) is None:
-            return JsonResponse({"meta": get_app_info()}, status=HTTPStatus.NOT_FOUND)
+            return JsonResponse(
+                WebringListResponse(meta=None)._asdict(), status=HTTPStatus.NOT_FOUND
+            )
 
         # Build up the response data, which includes not finding any entries in the given webring
-        entries = [
-            entry._asdict() for entry in self.get_queryset().order_by(self.get_ordering()).all()
-        ]
+        try:
+            _, page, qs, _ = self.paginate_queryset(
+                self.get_queryset().order_by(self.get_ordering()), self.paginate_by
+            )
+
+        # If there are no results to show, `paginate_queryset` raises a 404, which is why we catch
+        # it instead of a `Pagination` exception like you might expect. This is effectively the same
+        # response as not being able to locate a ring
+        except Http404:
+            # Construct a special page instance that allows navigation from an invalid page back to
+            # the previous, valid page to occur
+            page = Page(
+                Entry.objects.none(),
+                int(request.GET["page"][0]),
+                self.paginator_class(Entry.objects.none(), 1),
+            )
+            return JsonResponse(
+                WebringListResponse(meta=webring, page=page)._asdict(),
+                status=HTTPStatus.NOT_FOUND,
+            )
+
+        entries = [entry._asdict() for entry in qs.all()]
         return JsonResponse(
-            {"meta": webring._asdict() | get_app_info(), "entries": entries}, status=HTTPStatus.OK
+            WebringListResponse(meta=webring, page=page, entries=entries)._asdict(),
+            status=HTTPStatus.OK,
         )
 
 

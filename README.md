@@ -24,6 +24,7 @@ The following items are new or different in Webring2:
 * Web-based admin interface for management of rings and entries
 * Rate-limiting on endpoints, to help prevent flooding and DDoS attacks
 * Webring and entry soft-deletion, in case of accidental removals
+* Entry pagination, for navigation through a ring
 
 Due to these changes, there is no direct upgrade path from the original webring platform. All
 entries will need to be manually added or scripted over to the new platform.
@@ -43,6 +44,12 @@ header to be properly set for the request.
 
 These default values can also be set globally in the app configuration but will be overridden by
 individual requests.
+
+### Entry pagination
+Entry pagination is supported via the `page` query string. If possible, a `page` object is provided
+in each response providing information about total pages and existence of prior or additional pages.
+If a page number is provided that results in no entries, the appropriate information will be
+provided to navigate back to the previous, valid page.
 
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
@@ -132,6 +139,7 @@ HTTP error is raised.
 - Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)
   - Discord webhook URL (`DISCORD_WEBHOOK_URL`)
 - Webring entry filtering
+  - `FILTER_ENTRIES_PER_PAGE`, default: `5`
   - `FILTER_INCLUDE_DEAD`, default: `True`
   - `FILTER_INCLUDE_ORIGIN`, default: `False`
   - `FILTER_INCLUDE_WEB_ARCHIVE`, default: `True`
