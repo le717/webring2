@@ -1,7 +1,5 @@
 import dataclasses
-import tomllib
 from http import HTTPStatus
-from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -11,18 +9,10 @@ from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
 
 from .models import Entry, Webring
+from .tools import get_app_info
 
 
 __all__ = ["EntryView", "WebringListView"]
-
-
-def get_app_info() -> dict[str, str]:
-    """Provide basic webring2 application information for a response."""
-    pyproject = tomllib.loads(Path("pyproject.toml").read_text())
-    return {
-        "software": pyproject["project"]["urls"]["homepage"],
-        "version": pyproject["project"]["version"],
-    }
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -55,10 +45,15 @@ class WebringListResponse:
 
 
 class WebringListView(ListView):
+    """Fetch all entries.
+
+    Provide the appropriate query string arguments to filter the result set as desired.
+    """
+
     model = Entry
     ordering = "title"
     paginate_by = settings.FILTER_ENTRIES_PER_PAGE
-    http_method_names = ("head", "get")
+    http_method_names = ["head", "get"]
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
     @staticmethod

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "auditlog",
     "django_softdelete",
     "webring.core",
+    "webring.embed",
 ]
 
 MIDDLEWARE = [

@@ -4,13 +4,13 @@
 
 ## Features
 - Multiple webrings per application instance
-- ~~Automatically provided JavaScript to embed a simple rendering of all entries~~
+- ~~Automatic JavaScript to embed a simple rendering of entries~~
 - ~~Linkrot checking, with Web Archive fallback url for dead links (when possible)~~
 - ~~Optional linkrot event logging to [Discord](https://discord.com/) channel~~
 
 > ℹ️ **Note** <br>
 If you are wanting to learn how to run an instance of Webring2 yourself, jump to [Development](#development).
-Otherwise, read on to keep learning about its features.
+Otherwise, read on to learn about its features.
 
 ### What's new in Webring2?
 This project is a complete rewrite of my earlier [webring](https://github.com/le717/webring) project.
@@ -18,7 +18,8 @@ I did this because I wanted to expand or complete functionality in the original 
 time, knowledge, and tech-stack differences, it was easier to rewrite it than continue development.
 
 The following items are new or different in Webring2:
-* Developed in the [Django web framework](https://www.djangoproject.com/), rather than [Flask](https://flask.palletsprojects.com/en/stable/)
+* Developed in the [Django web framework](https://www.djangoproject.com/), rather than
+  [Flask](https://flask.palletsprojects.com/en/stable/)
 * Multiple rings are supported by a single hosted instance, rather than one ring per instance
 * Rings are identifiable by slugs, rather than UUIDs
 * Web-based admin interface for management of rings and entries
@@ -78,10 +79,9 @@ Starting with version 1.4.1, a full history of linkrot checks are available for 
 by making an authenticated `GET` request to `/linkrot/<uuid>/history`.
 
 ### Automatic simple embed
-
-Starting with version 1.3.0, a JavaScript file is provided to generate and embed a simple rendering
-of the webring into your site. It includes all entries in the script, preventing any additional
-HTTP requests.
+A JavaScript file is provided to generate and embed a simple rendering of a requested webring onto
+your website. It includes all required rendering elements in the script, preventing any additional
+manual setup.
 
 To use it, create an HTML element in your page with a CSS ID of `webring-embed-area`.
 If the selector is found and there are entries to display, the webring will be injected
@@ -96,7 +96,7 @@ into that area of your site. A simple setup might look as follows:
 </section>
 
 <!-- Load the webring -->
-<script defer src="https://example.com/webring-embed.js"></script>
+<script defer src="https://example.com/embed/<webring-slug>/webring-embed.js"></script>
 ```
 
 As illustrated, a no-js fallback is recommended for visitors to your site that may have JavaScript

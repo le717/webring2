@@ -21,5 +21,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("embed/", include("webring.embed.urls", namespace="embed")),
     path("", include("webring.core.urls", namespace="core")),
 ]
