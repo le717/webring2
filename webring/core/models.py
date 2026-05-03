@@ -80,16 +80,7 @@ class Entry(SoftDeleteModel):
     @staticmethod
     def public_fields() -> list[str]:
         """Define the fields that should be exposed to the public."""
-        return [
-            "title",
-            "description",
-            "url",
-            "uuid",
-            "is_dead",
-            "is_web_archive",
-            "date_added",
-            "date_last_updated",
-        ]
+        return ["title", "description", "url", "is_dead", "is_web_archive"]
 
     uuid = models.UUIDField(
         unique=True,
