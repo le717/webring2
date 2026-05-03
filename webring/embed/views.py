@@ -1,4 +1,5 @@
 from typing import Any
+from urllib.parse import urljoin
 
 from django.views.generic import TemplateView
 
@@ -23,6 +24,9 @@ class EmbedView(TemplateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         """Provide the information needed to render an embeddable webring."""
         ctx = super().get_context_data()
-        ctx["entries"] = []
-        ctx["config"] = get_app_info()
+        ctx["app"] = get_app_info()
+        ctx["base_url"] = urljoin(
+            self.request._current_scheme_host, self.request.resolver_match.kwargs["ring"]
+        )
+        self.request.build_absolute_uri()
         return ctx

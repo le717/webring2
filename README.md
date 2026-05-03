@@ -4,7 +4,7 @@
 
 ## Features
 - Multiple webrings per application instance
-- ~~Automatic JavaScript to embed a simple rendering of entries~~
+- JavaScript to alow simple embedding and display
 - ~~Linkrot checking, with Web Archive fallback url for dead links (when possible)~~
 - ~~Optional linkrot event logging to [Discord](https://discord.com/) channel~~
 
@@ -23,7 +23,7 @@ The following items are new or different in Webring2:
 * Multiple rings are supported by a single hosted instance, rather than one ring per instance
 * Rings are identifiable by slugs, rather than UUIDs
 * Web-based admin interface for management of rings and entries
-* Rate-limiting on endpoints, to help prevent flooding and DDoS attacks
+* ~~Rate-limiting on endpoints, to help prevent flooding and DDoS attacks~~ not yet
 * Webring and entry soft-deletion, in case of accidental removals
 * Entry pagination, for navigation through a ring
 
@@ -52,10 +52,43 @@ in each response providing information about total pages and existence of prior 
 If a page number is provided that results in no entries, the appropriate information will be
 provided to navigate back to the previous, valid page.
 
+### Automatic simple embed
+A JavaScript file is provided to generate and embed a simple rendering of a requested webring onto
+your website. It includes all required rendering elements in the script, preventing any additional
+manual setup.
+
+To use it, create an HTML element in your page with a CSS ID of `webring-embed-area`.
+If the selector is found and there are entries to display, the webring will be injected
+into that area of your site. A simple setup might look as follows, where `<webring-slug>` is the
+webring slug you are trying to load:
+
+```html
+<!-- Create an area to display the webring -->
+<section id="webring-embed-area">
+  <noscript>
+    The webring could not be loaded because your browser doesn't support JavaScript.
+  </noscript>
+</section>
+
+<!-- Load the webring -->
+<script type="module" src="https://example.com/embed/<webring-slug>/webring-embed.js"></script>
+```
+
+As illustrated, a no-js fallback is recommended for visitors to your site that may have JavaScript
+execution disabled or do not have JavaScript support.
+
+Note that using the simple embed could potentially be slow and increase the page load time,
+depending on the number of entries. This script is also not minified, which could also increase the
+page load time. If greater control over loading and displaying the webring is desired, it is
+suggested to manually call the root URL to fetch and display the entries, or put the webring on a
+non-heavily trafficked page of your site.
+
+The simple embed is intentionally unstyled to give creative freedom in making it match your site's
+design scheme/language. All elements contain appropriate CSS classes for your styling.
+
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
 ### Rotting links checking
-
 Because websites can and will eventually vanish, even after
 [a few months](https://brisray.com/web/linkrot.htm), link rot is a real
 problem for webrings. As they are manually curated and maintained, knowing if an entry is
@@ -78,38 +111,7 @@ makes the aforementioned `POST` request and schedule it to automatically run via
 Starting with version 1.4.1, a full history of linkrot checks are available for individual entries
 by making an authenticated `GET` request to `/linkrot/<uuid>/history`.
 
-### Automatic simple embed
-A JavaScript file is provided to generate and embed a simple rendering of a requested webring onto
-your website. It includes all required rendering elements in the script, preventing any additional
-manual setup.
-
-To use it, create an HTML element in your page with a CSS ID of `webring-embed-area`.
-If the selector is found and there are entries to display, the webring will be injected
-into that area of your site. A simple setup might look as follows:
-
-```html
-<!-- Create an area to display the webring -->
-<section id="webring-embed-area">
-  <noscript>
-    The webring could not be loaded because your browser doesn't support JavaScript.
-  </noscript>
-</section>
-
-<!-- Load the webring -->
-<script defer src="https://example.com/embed/<webring-slug>/webring-embed.js"></script>
-```
-
-As illustrated, a no-js fallback is recommended for visitors to your site that may have JavaScript
-execution disabled or do not have JavaScript support.
-
-Note that using the simple embed could potentially be slow and increase the page load time,
-depending on the number of entries. This script is also not minified, which could also increase the
-page load time. If greater control over loading and displaying the webring is desired, it is
-suggested to manually call the root URL to fetch and display the entries, or put the webring on a
-non-heavily trafficked page of your site.
-
 ### Discord channel logger
-
 If the [Discord](https://discord.com) logger is enabled and configured, entries that are found to be
 rotting or dead will be reported in a Discord channel. This can be helpful for keeping up with
 the webring's health and ensuring entries are available. Configuring the Discord logger
@@ -132,7 +134,6 @@ not provided, a `400 BAD REQUEST` HTTP error is raised.  If it is not in the lis
 HTTP error is raised.
 
 ## Required Secret/Configuration Keys
-
 - Django secret key (`SECRET_KEY`)
 - Integer number of times supposed rotted links should be checked
   (`TIMES_FAILED_THRESHOLD`, default: 10)
@@ -145,7 +146,6 @@ HTTP error is raised.
   - `FILTER_INCLUDE_WEB_ARCHIVE`, default: `True`
 
 ## Development
-
 1. Install Python 3.14+, [uv](https://github.com/astral-sh/uv), and VS Code
 1. Set the required settings and configuration values in `webring/settings/local.py`
 1. Run `uv sync`
@@ -159,7 +159,6 @@ but setup or execution scripts are not provided. If you make some, please, send 
 1. `docker-compose up -d`
 
 ## License
-
 2026 Caleb
 
 [MIT](LICENSE)
