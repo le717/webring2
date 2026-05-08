@@ -3,12 +3,12 @@ class Webring {
   /**
    * Construct a simple display of a webring.
    * @param {String} base_url The base URL of the webring to fetch.
-   * @param {Object} options
+   * @param {Object} options Filtering options for fetching the webring.
    */
   constructor(base_url, options) {
     this.base_url = base_url;
     this.options = options;
-    this.selector = "#webring__embed-area"
+    this.selector = "#webring__embed-area";
   }
 
   /**
@@ -33,9 +33,9 @@ class Webring {
   /**
    * Display the webring data.
    * @param {JSON} data The webring data to display.
-   * @returns
    */
   display(data) {
+    // TODO: Handle no entries
     let qEmbedArea = document.querySelector(this.selector);
 
     // If there's no embed area or no weblinks, we can't do anything
@@ -47,7 +47,6 @@ class Webring {
       qEmbedArea.innerHTML = `<p class="webring__not-found">Unable to load webring.</p>`;
       return null;
     }
-
 
     // Display the webring title and desc
     qEmbedArea.innerHTML = `<p class="webring__title">${data.meta.name}</p>
@@ -66,7 +65,7 @@ class Webring {
     markup.push("</ul>");
     qEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
 
-  // If there's pagination information, generate navigation controls
+    // If there's pagination information, generate navigation controls
     if (data.page) {
       let qNavigationArea = document.createElement("div");
       qNavigationArea.classList.add("webring__navigation");
@@ -75,47 +74,51 @@ class Webring {
       // change the pagination controls to a simple "all entries" label
       if (!data.page.has_prev_page && !data.page.has_next_page) {
         qNavigationArea.innerHTML = `<p class="webring__navigation__all_entries">Showing all entries</p>`;
+        qEmbedArea.insertAdjacentElement("beforeend", qNavigationArea);
+        return null;
       }
 
       // Create the previous page link
-      let qPrevLink = document.createElement("a");
-      qPrevLink.innerText = "Previous"
+      let qPrevLink = document.createElement("span");
+      qPrevLink.innerText = "Previous";
       qPrevLink.classList.add("webring__navigation__link-prev");
 
-      // Set either the url or disabled class, depending if we have another page
-      if (data.page.has_prev_page) {
-        qPrevLink.href = `${this.base_url}?page=${data.page.prev_page}`;
-      } else {
-        qPrevLink.classList.add("disabled");
-      }
+      // Describe the link properly depending if we have another page
+      qPrevLink.classList.add("disabled", data.page.prev_page);
       qNavigationArea.insertAdjacentElement("beforeend", qPrevLink);
 
       // Use a pipe symbol as the link divider
       qNavigationArea.insertAdjacentHTML("beforeend", "|");
 
       // Create the next page link
-      let qNextLink = document.createElement("a");
-      qNextLink.innerText = "Next"
+      let qNextLink = document.createElement("span");
+      qNextLink.innerText = "Next";
       qNextLink.classList.add("webring__navigation__link-next");
 
-      // Set either the url or disabled class, depending if we have another page
-      if (data.page.has_next_page) {
-        qNextLink.href = `${this.base_url}?page=${data.page.next_page}`;
-      } else {
-        qNextLink.classList.add("disabled");
-      }
+      // Describe the link properly depending if we have another page
+      qNextLink.classList.add("disabled", data.page.next_page);
       qNavigationArea.insertAdjacentElement("beforeend", qNextLink);
 
       // Create the page counts
       let qPageCounts = document.createElement("small");
       qPageCounts.classList.add("webring__navigation__page-counts");
-      qPageCounts.innerText = `(Page ${data.page.current_page} of ${data.page.total_pages})`
+      qPageCounts.innerText = `(Page ${data.page.current_page} of ${data.page.total_pages})`;
       qNavigationArea.insertAdjacentElement("beforeend", qPageCounts);
 
       // Add the navigational elements to the page
       qEmbedArea.insertAdjacentElement("beforeend", qNavigationArea);
 
-      // TODO: Wire up prev/next buttons to actually paginate
+      // Wire up prev/next buttons to paginate
+      if (data.page.has_prev_page) {
+        qPrevLink.addEventListener("click", () => {
+          this.fetch(data.page.prev_page).then((r) => this.display(r));
+        }, { once: true });
+      }
+      if (data.page.has_next_page) {
+        qNextLink.addEventListener("click", () => {
+          this.fetch(data.page.next_page).then((r) => this.display(r));
+        }, { once: true });
+      }
     }
   }
 }
@@ -123,8 +126,8 @@ class Webring {
 /**
  * Init and display the webring on init page load.
  */
-const webring = new Webring("{{ base_url }}",
-  {{ options|safe }}
+const webring = new Webring(
+  "{{ base_url }}", {{ options|safe }}
 );
 
 webring.fetch({{ page }}).then((data) => {
