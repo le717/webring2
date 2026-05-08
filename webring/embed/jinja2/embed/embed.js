@@ -8,6 +8,7 @@ class Webring {
   constructor(base_url, options) {
     this.base_url = base_url;
     this.options = options;
+    // TODO: Make selector match the slug
     this.selector = "#webring__embed-area";
   }
 
@@ -101,7 +102,7 @@ class Webring {
       qNavigationArea.insertAdjacentElement("beforeend", qNextLink);
 
       // Create the page counts
-      let qPageCounts = document.createElement("small");
+      let qPageCounts = document.createElement("span");
       qPageCounts.classList.add("webring__navigation__page-counts");
       qPageCounts.innerText = `(Page ${data.pagination.current_page} of ${data.pagination.total_pages})`;
       qNavigationArea.insertAdjacentElement("beforeend", qPageCounts);
