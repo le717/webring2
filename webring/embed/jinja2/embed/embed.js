@@ -66,13 +66,13 @@ class Webring {
     qEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
 
     // If there's pagination information, generate navigation controls
-    if (data.page) {
+    if (data.pagination) {
       let qNavigationArea = document.createElement("div");
       qNavigationArea.classList.add("webring__navigation");
 
       // If there are no additional pages to cycle through in either direction,
       // change the pagination controls to a simple "all entries" label
-      if (!data.page.has_prev_page && !data.page.has_next_page) {
+      if (!data.pagination.has_prev_page && !data.pagination.has_next_page) {
         qNavigationArea.innerHTML = `<p class="webring__navigation__all_entries">Showing all entries</p>`;
         qEmbedArea.insertAdjacentElement("beforeend", qNavigationArea);
         return null;
@@ -84,7 +84,7 @@ class Webring {
       qPrevLink.classList.add("webring__navigation__link-prev");
 
       // Describe the link properly depending if we have another page
-      qPrevLink.classList.add("disabled", data.page.prev_page);
+      qPrevLink.classList.add("disabled", data.pagination.prev_page);
       qNavigationArea.insertAdjacentElement("beforeend", qPrevLink);
 
       // Use a pipe symbol as the link divider
@@ -96,27 +96,27 @@ class Webring {
       qNextLink.classList.add("webring__navigation__link-next");
 
       // Describe the link properly depending if we have another page
-      qNextLink.classList.add("disabled", data.page.next_page);
+      qNextLink.classList.add("disabled", data.pagination.next_page);
       qNavigationArea.insertAdjacentElement("beforeend", qNextLink);
 
       // Create the page counts
       let qPageCounts = document.createElement("small");
       qPageCounts.classList.add("webring__navigation__page-counts");
-      qPageCounts.innerText = `(Page ${data.page.current_page} of ${data.page.total_pages})`;
+      qPageCounts.innerText = `(Page ${data.pagination.current_page} of ${data.pagination.total_pages})`;
       qNavigationArea.insertAdjacentElement("beforeend", qPageCounts);
 
       // Add the navigational elements to the page
       qEmbedArea.insertAdjacentElement("beforeend", qNavigationArea);
 
       // Wire up prev/next buttons to paginate
-      if (data.page.has_prev_page) {
+      if (data.pagination.has_prev_page) {
         qPrevLink.addEventListener("click", () => {
-          this.fetch(data.page.prev_page).then((r) => this.display(r));
+          this.fetch(data.pagination.prev_page).then((r) => this.display(r));
         }, { once: true });
       }
-      if (data.page.has_next_page) {
+      if (data.pagination.has_next_page) {
         qNextLink.addEventListener("click", () => {
-          this.fetch(data.page.next_page).then((r) => this.display(r));
+          this.fetch(data.pagination.next_page).then((r) => this.display(r));
         }, { once: true });
       }
     }

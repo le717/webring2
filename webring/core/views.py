@@ -3,7 +3,7 @@ from http import HTTPStatus
 from typing import Any
 
 from django.conf import settings
-from django.core.paginator import Page
+from django.core.paginator import EmptyPage, Page
 from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
@@ -17,7 +17,7 @@ __all__ = ["EntryView", "WebringListView"]
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class WebringListResponse:
-    """Model a webring's list response."""
+    """Model a webring's http json response."""
 
     meta: Webring | None
     page: Page | None = None
@@ -28,20 +28,38 @@ class WebringListResponse:
         d = dataclasses.asdict(self)
         d["meta"] = d["meta"]._asdict() if d["meta"] else None
 
-        # Build out pagination information
-        d["page"] = (
-            None
-            if d["page"] is None
-            else {
+        # Build out the base pagination information
+        if d["page"] is None:
+            d["pagination"] = None
+        else:
+            d["pagination"] = {
                 "total_pages": d["page"].paginator.num_pages,
                 "has_prev_page": d["page"].has_previous(),
                 "has_next_page": d["page"].has_next(),
                 "current_page": d["page"].number,
-                # TODO: These fail on the specially constructed Page object for invalid pages
-                "prev_page": d["page"].previous_page_number() if d["page"].has_previous() else None,
-                "next_page": d["page"].next_page_number() if d["page"].has_next() else None,
             }
-        )
+
+            # Carefully handle the previous and next page number elements. Because there is special
+            # processing of invalid pages that produces a custom `Page` object, the `has_*()` methods
+            # can return `True` while the `*_page_number()` methods throw an exception. The behavior
+            # is thus understood as so:
+            #   1. If `*_page_number()` does not throw, there is a page in that direction
+            #   2. If `*_page_number()` does throw, there is *not* a page in that direction
+            try:
+                d["pagination"]["prev_page"] = (
+                    d["page"].previous_page_number() if d["page"].has_previous() else None
+                )
+            except EmptyPage:
+                d["pagination"]["prev_page"] = d["page"].number - 1
+            try:
+                d["pagination"]["next_page"] = (
+                    d["page"].next_page_number() if d["page"].has_next() else None
+                )
+            except EmptyPage:
+                d["pagination"]["next_page"] = None
+
+        # We don't want to attempt to send out the page object in the response
+        del d["page"]
         return d
 
 
