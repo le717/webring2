@@ -38,9 +38,9 @@ parameters to the URLs.
 Filtering out the site requesting the webring from the webring entries requires the HTTP `ORIGIN`
 header to be properly set for the request.
 
-- `include_dead: str = "yes"`: Include entries that have been determined to be dead links
-- `include_origin: str = "no"`: Remove the site requesting the webring from the entries, if present
-- `include_web_archive: str = "yes"`: Include entries that can only be accessed through
+- `include_dead: Literal["true"] | Literal["false"] = "true"`: Include entries that have been determined to be dead links
+- `include_origin: Literal["true"] | Literal["false"] = "false"`: Remove the site requesting the webring from the entries, if present
+- `include_web_archive: Literal["true"] | Literal["false"] = "true"`: Include entries that can only be accessed through
   the Web Archive
 
 These default values can also be set globally in the app configuration but will be overridden by
