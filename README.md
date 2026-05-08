@@ -9,11 +9,11 @@
 - ~~Optional linkrot event logging to [Discord](https://discord.com/) channel~~
 
 > ℹ️ **Note** <br>
-If you are wanting to learn how to run an instance of Webring2 yourself, jump to [Development](#development).
+If you are want to run an instance of Webring2 yourself, jump to [Development](#development).
 Otherwise, read on to learn about its features.
 
 ### What's new in Webring2?
-This project is a complete rewrite of my earlier [webring](https://github.com/le717/webring) project.
+This project is a complete rewrite of my earlier [Webring](https://github.com/le717/webring) project.
 I did this because I wanted to expand or complete functionality in the original project, but due to
 time, knowledge, and tech-stack differences, it was easier to rewrite it than continue development.
 
@@ -22,12 +22,12 @@ The following items are new or different in Webring2:
   [Flask](https://flask.palletsprojects.com/en/stable/)
 * Multiple rings are supported by a single hosted instance, rather than one ring per instance
 * Rings are identifiable by slugs, rather than UUIDs
-* Web-based admin interface for management of rings and entries
+* Web-based admin interface for instance management of rings and entries
 * ~~Rate-limiting on endpoints, to help prevent flooding and DDoS attacks~~ not yet
 * Webring and entry soft-deletion, in case of accidental removals
 * Entry pagination, for navigation through a ring
 
-Due to these changes, there is no direct upgrade path from the original webring platform. All
+Due to these changes, there is no direct upgrade path from the original Webring platform. All
 entries will need to be manually added or scripted over to the new platform.
 
 ### Filtering entries
@@ -86,6 +86,29 @@ page load time. If greater control over loading and displaying the webring is de
 suggested to manually call the root URL to fetch and display the entries, or put the webring on a
 non-heavily trafficked page of your site.
 
+## Required Secret/Configuration Keys
+- Django secret key (`SECRET_KEY`)
+- Integer number of times supposed rotted links should be checked
+  (`TIMES_FAILED_THRESHOLD`, default: 10)
+- Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)
+  - Discord webhook URL (`DISCORD_WEBHOOK_URL`)
+- Webring entry filtering
+  - `FILTER_ENTRIES_PER_PAGE`, default: `5`
+  - `FILTER_INCLUDE_DEAD`, default: `True`
+  - `FILTER_INCLUDE_ORIGIN`, default: `False`
+  - `FILTER_INCLUDE_WEB_ARCHIVE`, default: `True`
+
+## Development
+1. Install Python 3.14+, [uv](https://github.com/astral-sh/uv), and VS Code
+1. Set the required settings and configuration values in `webring/settings/local.py`
+1. Run `uv sync`
+1. ~~Run tests with `poetry run pytest` or through VS Code~~
+
+## License
+2026 Caleb
+
+[MIT](LICENSE)
+
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
 ### Rotting links checking
@@ -133,32 +156,9 @@ to be passed to the request via the HTTP `Authorization` header as a `Bearer` to
 not provided, a `400 BAD REQUEST` HTTP error is raised.  If it is not in the list, a `403 FORBIDDEN`
 HTTP error is raised.
 
-## Required Secret/Configuration Keys
-- Django secret key (`SECRET_KEY`)
-- Integer number of times supposed rotted links should be checked
-  (`TIMES_FAILED_THRESHOLD`, default: 10)
-- Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)
-  - Discord webhook URL (`DISCORD_WEBHOOK_URL`)
-- Webring entry filtering
-  - `FILTER_ENTRIES_PER_PAGE`, default: `5`
-  - `FILTER_INCLUDE_DEAD`, default: `True`
-  - `FILTER_INCLUDE_ORIGIN`, default: `False`
-  - `FILTER_INCLUDE_WEB_ARCHIVE`, default: `True`
-
-## Development
-1. Install Python 3.14+, [uv](https://github.com/astral-sh/uv), and VS Code
-1. Set the required settings and configuration values in `webring/settings/local.py`
-1. Run `uv sync`
-1. ~~Run tests with `poetry run pytest` or through VS Code~~
-
 ## Build
 Webring2 uses Docker to help isolate instances. It is possible to run without Docker,
 but setup or execution scripts are not provided. If you make some, please, send them over!
 
 1. `docker build -t webring:latest .`
 1. `docker-compose up -d`
-
-## License
-2026 Caleb
-
-[MIT](LICENSE)
