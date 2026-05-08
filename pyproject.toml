@@ -22,7 +22,7 @@ source = "https://github.com/le717/webring2.git"
 changelog = "https://github.com/le717/webring2/blob/main/CHANGES.md"
 
 [dependency-groups]
-dev = ["uv", "ruff"]
+dev = ["uv", "ruff", "ty", "django-stubs>=6.0.3"]
 
 [tool.ruff]
 indent-width = 4

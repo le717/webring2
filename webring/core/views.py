@@ -71,8 +71,8 @@ class WebringListView(ListView):
 
     model = Entry
     ordering = "title"
-    paginate_by = settings.FILTER_ENTRIES_PER_PAGE
-    http_method_names = ["head", "get"]
+    paginate_by: int = settings.FILTER_ENTRIES_PER_PAGE
+    http_method_names: list[str] = ["head", "get"]
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
     def get_webring(self) -> Webring | None:
@@ -141,7 +141,7 @@ class WebringListView(ListView):
                 status=HTTPStatus.NOT_FOUND,
             )
 
-        entries = [entry._asdict() for entry in qs.all()]
+        entries: list[dict] = [entry._asdict() for entry in qs.all()]
         return JsonResponse(
             WebringListResponse(meta=webring, page=page, entries=entries)._asdict(),
             status=HTTPStatus.OK,
