@@ -101,10 +101,10 @@ non-heavily trafficked page of your site.
 
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)
-- Integer number of times supposed rotted links should be checked
-  (`TIMES_FAILED_THRESHOLD`, default: 10)
-- Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)
-  - Discord webhook URL (`DISCORD_WEBHOOK_URL`)
+- ~~Integer number of times supposed rotted links should be checked~~
+  ~~(`TIMES_FAILED_THRESHOLD`, default: 10)~~
+- ~~Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)~~
+  - ~~Discord webhook URL (`DISCORD_WEBHOOK_URL`)~~
 - Webring entry filtering
   - `FILTER_ENTRIES_PER_PAGE`, default: `5`
   - `FILTER_INCLUDE_DEAD`, default: `True`
