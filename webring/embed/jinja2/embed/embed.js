@@ -35,7 +35,6 @@ class Webring {
    * @param {JSON} data The webring data to display.
    */
   display(data) {
-    // TODO: Handle no entries
     let qEmbedArea = document.querySelector(this.selector);
 
     // If there's no embed area or no weblinks, we can't do anything
@@ -53,6 +52,7 @@ class Webring {
       <p class="webring__description">${data.meta.description}</p>`;
 
     // Generate the markup for each item in the webring
+    // TODO: Handle no entries
     const markup = ["<ul>"];
     data.entries.forEach((item) => {
       markup.push(
@@ -66,6 +66,7 @@ class Webring {
     qEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
 
     // If there's pagination information, generate navigation controls
+    // TODO: Handle invalid page pagination
     if (data.pagination) {
       let qNavigationArea = document.createElement("div");
       qNavigationArea.classList.add("webring__navigation");
