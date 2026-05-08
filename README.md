@@ -86,6 +86,19 @@ page load time. If greater control over loading and displaying the webring is de
 suggested to manually call the root URL to fetch and display the entries, or put the webring on a
 non-heavily trafficked page of your site.
 
+#### Available CSS selectors
+- `#webring__embed-area`
+- `.webring__not-found`
+- `.webring__title`
+- `.webring__description`
+- `.webring__entry-title`
+- `.webring__entry-description`
+- `.webring__navigation`
+- `.webring__navigation__all_entries`
+- `.webring__navigation__link-prev`
+- `.webring__navigation__link-next`
+- `.webring__navigation__page-counts`
+
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)
 - Integer number of times supposed rotted links should be checked
