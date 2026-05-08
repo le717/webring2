@@ -9,7 +9,7 @@ from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
 
 from .models import Entry, Webring
-from .tools import get_app_info
+from .tools import get_app_info, truthy_str_to_bool
 
 
 __all__ = ["EntryView", "WebringListView"]
@@ -56,13 +56,6 @@ class WebringListView(ListView):
     http_method_names = ["head", "get"]
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
-    @staticmethod
-    def truthy_str_to_bool(val: bool | str) -> bool:
-        """Convert truthy strings to a Boolean value."""
-        if isinstance(val, bool):
-            return val
-        return val.lower() in {"y", "yes", "t", "true", "o", "one", "1"}
-
     def get_webring(self) -> Webring | None:
         """Attempt to find a webring with the given slug."""
         return Webring.objects.filter(slug=self.kwargs["ring"]).first()
@@ -87,13 +80,13 @@ class WebringListView(ListView):
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         # Respect any filtering arguments provided in the request, falling back
         # to app-level defaults if they are not provided
-        self.qs_filters["include_origin"] = self.truthy_str_to_bool(
+        self.qs_filters["include_origin"] = truthy_str_to_bool(
             request.GET.get("include_origin", settings.FILTER_INCLUDE_ORIGIN)
         )
-        self.qs_filters["include_dead"] = self.truthy_str_to_bool(
+        self.qs_filters["include_dead"] = truthy_str_to_bool(
             request.GET.get("include_dead", settings.FILTER_INCLUDE_DEAD)
         )
-        self.qs_filters["include_web_archive"] = self.truthy_str_to_bool(
+        self.qs_filters["include_web_archive"] = truthy_str_to_bool(
             request.GET.get("include_web_archive", settings.FILTER_INCLUDE_WEB_ARCHIVE)
         )
 

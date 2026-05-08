@@ -38,9 +38,9 @@ parameters to the URLs.
 Filtering out the site requesting the webring from the webring entries requires the HTTP `ORIGIN`
 header to be properly set for the request.
 
-- `include_dead: bool = "yes"`: Include entries that have been determined to be dead links
-- `include_origin: bool = "no"`: Remove the site requesting the webring from the entries, if present
-- `include_web_archive: bool = "yes"`: Include entries that can only be accessed through
+- `include_dead: str = "yes"`: Include entries that have been determined to be dead links
+- `include_origin: str = "no"`: Remove the site requesting the webring from the entries, if present
+- `include_web_archive: str = "yes"`: Include entries that can only be accessed through
   the Web Archive
 
 These default values can also be set globally in the app configuration but will be overridden by
@@ -55,16 +55,16 @@ provided to navigate back to the previous, valid page.
 ### Automatic simple embed
 A JavaScript file is provided to generate and embed a simple rendering of a requested webring onto
 your website. It includes all required rendering elements in the script, preventing any additional
-manual setup.
+manual setup. It fully supports pagination and all filtering parameters.
 
-To use it, create an HTML element in your page with a CSS ID of `webring-embed-area`.
+To use it, create an HTML element in your page with a CSS ID of `webring__embed-area`.
 If the selector is found and there are entries to display, the webring will be injected
 into that area of your site. A simple setup might look as follows, where `<webring-slug>` is the
 webring slug you are trying to load:
 
 ```html
 <!-- Create an area to display the webring -->
-<section id="webring-embed-area">
+<section id="webring__embed-area">
   <noscript>
     The webring could not be loaded because your browser doesn't support JavaScript.
   </noscript>
