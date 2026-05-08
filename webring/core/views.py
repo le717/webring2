@@ -37,6 +37,7 @@ class WebringListResponse:
                 "has_prev_page": d["page"].has_previous(),
                 "has_next_page": d["page"].has_next(),
                 "current_page": d["page"].number,
+                # TODO: These fail on the specially constructed Page object for invalid pages
                 "prev_page": d["page"].previous_page_number() if d["page"].has_previous() else None,
                 "next_page": d["page"].next_page_number() if d["page"].has_next() else None,
             }
@@ -110,8 +111,8 @@ class WebringListView(ListView):
         # it instead of a `Pagination` exception like you might expect. This is effectively the same
         # response as not being able to locate a ring
         except Http404:
-            # Construct a special page instance that allows navigation from an invalid page back to
-            # the previous, valid page to occur
+            # Construct a special page instance that allows navigation from an invalid page
+            # back to the previous, valid page to occur
             page = Page(
                 Entry.objects.none(),
                 int(request.GET["page"][0]),

@@ -32,8 +32,8 @@ class EmbedView(TemplateView):
             "base_url": urljoin(
                 self.request._current_scheme_host, self.request.resolver_match.kwargs["ring"]
             ),
+            "page": int(self.request.GET.get("page", 1)),
             "options": json.dumps({
-                "page": int(self.request.GET.get("page", 1)),
                 "include_dead": truthy_str_to_bool(
                     self.request.GET.get("include_dead", settings.FILTER_INCLUDE_DEAD)
                 ),

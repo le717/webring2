@@ -1,64 +1,132 @@
 /*! webring2 v{{ app.version }} - {{ app.software }} */
-(async function() {
-  "use strict";
-  // TODO: All of this needs to be working to be a class or methods that can be invoked
+class Webring {
+  /**
+   * Construct a simple display of a webring.
+   * @param {String} base_url The base URL of the webring to fetch.
+   * @param {Object} options
+   */
+  constructor(base_url, options) {
+    this.base_url = base_url;
+    this.options = options;
+    this.selector = "#webring__embed-area"
+  }
+
   /**
    * Fetch data from the webring.
    * @param {Number} page The page number to be loaded.
-   * @returns {Promise<JSON>}
+   * @returns {Promise<JSON>} The paginated webring response.
    */
-  async function fetchWebring(page = 1) {
-    let url = new URL("{{ base_url }}/");
+  async fetch(page = 1) {
+    let url = new URL(`${this.base_url}/`);
+
+    // Set the query parameters as needed
     url.searchParams.set("page", page.toString());
-    return await fetch(url, {
-      method: "get"
-    }).then(r => r.json())
+    url.searchParams.set("include_dead", this.options.include_dead);
+    url.searchParams.set("include_origin", this.options.include_origin);
+    url.searchParams.set("include_web_archive", this.options.include_web_archive);
+
+    return fetch(url, {
+      method: "get",
+    }).then((r) => r.json());
   }
 
-  const qWebringEmbedArea = document.querySelector("#webring-embed-area");
+  /**
+   * Display the webring data.
+   * @param {JSON} data The webring data to display.
+   * @returns
+   */
+  display(data) {
+    let qEmbedArea = document.querySelector(this.selector);
 
-  let webring = await fetchWebring();
-  console.log(webring);
-
-  // If there's no embed area or no weblinks, we can't do anything
-  if (qWebringEmbedArea === null) {
-    return null;
-  }
-  if (webring.meta === null) {
-    qWebringEmbedArea.innerHTML = `<p class="webring-not-found">Unable to load webring.</p>`
-    return;
-  }
-
-  // Display the webring title and desc
-  qWebringEmbedArea.innerHTML = `<p class="webring-title">${webring.meta.name}</p>
-  <p class="webring-description">${webring.meta.description}</p>`;
-
-  // Generate the markup for each item in the webring
-  const markup = ["<ul>"];
-  webring.entries.forEach((item) => {
-    markup.push(
-      `<li>
-        <a class="webring-entry-title" href="${item.url}">${item.title}</a><br>
-        <span class="webring-entry-description">${item.description}</span>
-      </li>`
-    );
-  });
-  markup.push("</ul>");
-  qWebringEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
-
-  // TODO: Generate navigation controls
-  if (webring.page) {
-    const controls = [`<div class="webring-navigation">`];
-    if (webring.page.current_page === webring.page.total_pages) {
-      controls.push(`<p>Showing all entries</p>`)
+    // If there's no embed area or no weblinks, we can't do anything
+    if (qEmbedArea === null) {
+      console.log(`Cannot find DOM element ${this.selector}`);
+      return null;
     }
-    if (webring.page.has_prev_page) {
-
+    if (data.meta === null) {
+      qEmbedArea.innerHTML = `<p class="webring__not-found">Unable to load webring.</p>`;
+      return null;
     }
-    if (webring.page.has_next_page) {
 
+
+    // Display the webring title and desc
+    qEmbedArea.innerHTML = `<p class="webring__title">${data.meta.name}</p>
+      <p class="webring__description">${data.meta.description}</p>`;
+
+    // Generate the markup for each item in the webring
+    const markup = ["<ul>"];
+    data.entries.forEach((item) => {
+      markup.push(
+        `<li>
+          <a class="webring__entry-title" href="${item.url}">${item.title}</a><br>
+          <span class="webring__entry-description">${item.description}</span>
+        </li>`,
+      );
+    });
+    markup.push("</ul>");
+    qEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
+
+  // If there's pagination information, generate navigation controls
+    if (data.page) {
+      let qNavigationArea = document.createElement("div");
+      qNavigationArea.classList.add("webring__navigation");
+
+      // If there are no additional pages to cycle through in either direction,
+      // change the pagination controls to a simple "all entries" label
+      if (!data.page.has_prev_page && !data.page.has_next_page) {
+        qNavigationArea.innerHTML = `<p class="webring__navigation__all_entries">Showing all entries</p>`;
+      }
+
+      // Create the previous page link
+      let qPrevLink = document.createElement("a");
+      qPrevLink.innerText = "Previous"
+      qPrevLink.classList.add("webring__navigation__link-prev");
+
+      // Set either the url or disabled class, depending if we have another page
+      if (data.page.has_prev_page) {
+        qPrevLink.href = `${this.base_url}?page=${data.page.prev_page}`;
+      } else {
+        qPrevLink.classList.add("disabled");
+      }
+      qNavigationArea.insertAdjacentElement("beforeend", qPrevLink);
+
+      // Use a pipe symbol as the link divider
+      qNavigationArea.insertAdjacentHTML("beforeend", "|");
+
+      // Create the next page link
+      let qNextLink = document.createElement("a");
+      qNextLink.innerText = "Next"
+      qNextLink.classList.add("webring__navigation__link-next");
+
+      // Set either the url or disabled class, depending if we have another page
+      if (data.page.has_next_page) {
+        qNextLink.href = `${this.base_url}?page=${data.page.next_page}`;
+      } else {
+        qNextLink.classList.add("disabled");
+      }
+      qNavigationArea.insertAdjacentElement("beforeend", qNextLink);
+
+      // Create the page counts
+      let qPageCounts = document.createElement("small");
+      qPageCounts.classList.add("webring__navigation__page-counts");
+      qPageCounts.innerText = `(Page ${data.page.current_page} of ${data.page.total_pages})`
+      qNavigationArea.insertAdjacentElement("beforeend", qPageCounts);
+
+      // Add the navigational elements to the page
+      qEmbedArea.insertAdjacentElement("beforeend", qNavigationArea);
+
+      // TODO: Wire up prev/next buttons to actually paginate
     }
-    controls.push("</div>");
-    qWebringEmbedArea.insertAdjacentHTML("beforeend", controls.join(""));
   }
-}());
+}
+
+/**
+ * Init and display the webring on init page load.
+ */
+const webring = new Webring("{{ base_url }}",
+  {{ options|safe }}
+);
+
+webring.fetch({{ page }}).then((data) => {
+  webring.display(data);
+});

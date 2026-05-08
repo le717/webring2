@@ -77,14 +77,14 @@ webring slug you are trying to load:
 As illustrated, a no-js fallback is recommended for visitors to your site that may have JavaScript
 execution disabled or do not have JavaScript support.
 
+The simple embed is intentionally unstyled to give creative freedom in making it match your site's
+design scheme/language. All elements contain appropriate CSS classes for your styling.
+
 Note that using the simple embed could potentially be slow and increase the page load time,
 depending on the number of entries. This script is also not minified, which could also increase the
 page load time. If greater control over loading and displaying the webring is desired, it is
 suggested to manually call the root URL to fetch and display the entries, or put the webring on a
 non-heavily trafficked page of your site.
-
-The simple embed is intentionally unstyled to give creative freedom in making it match your site's
-design scheme/language. All elements contain appropriate CSS classes for your styling.
 
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
