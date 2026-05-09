@@ -3,13 +3,13 @@ class Webring {
   /**
    * Construct a simple display of a webring.
    * @param {String} base_url The base URL of the webring to fetch.
+   * @param {String} slug The slug of the webring to fetch.
    * @param {Object} options Filtering options for fetching the webring.
    */
-  constructor(base_url, options) {
+  constructor(base_url, slug, options) {
     this.base_url = base_url;
     this.options = options;
-    // TODO: Make selector match the slug
-    this.selector = "#webring__embed-area";
+    this.selector = `.webring__embed#${slug}`;
   }
 
   /**
@@ -129,7 +129,7 @@ class Webring {
  * Init and display the webring on init page load.
  */
 const webring = new Webring(
-  "{{ base_url }}", {{ options|safe }}
+  "{{ base_url }}", "{{ slug }}", {{ options|safe }}
 );
 
 webring.fetch({{ page }}).then((data) => {

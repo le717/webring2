@@ -57,14 +57,18 @@ A JavaScript file is provided to generate and embed a simple rendering of a requ
 your website. It includes all required rendering elements in the script, preventing any additional
 manual setup. It fully supports pagination and all filtering parameters.
 
-To use it, create an HTML element in your page with a CSS ID of `webring__embed-area`.
-If the selector is found and there are entries to display, the webring will be injected
-into that area of your site. A simple setup might look as follows, where `<webring-slug>` is the
-webring slug you are trying to load:
+For the pendantic, the embed is less a true "webring" and more of a simple directory listing, akin
+to a phonebook. If you are wanting a true "webring" structure, you'll can pull the API endpoint
+and render the results on your own.
+
+To use it, create an HTML element in your page with a CSS class of `webring__embed` and an ID of
+the webring's slug. If the selector is found and there are entries to display, the webring will be
+injected into that area of your site. A simple setup might look as follows, where `<webring-slug>`
+is the webring slug you are trying to load:
 
 ```html
 <!-- Create an area to display the webring -->
-<section id="webring__embed-area">
+<section class="webring__embed" id="<webring-slug>">
   <noscript>
     The webring could not be loaded because your browser doesn't support JavaScript.
   </noscript>
@@ -87,7 +91,7 @@ suggested to manually call the root URL to fetch and display the entries, or put
 non-heavily trafficked page of your site.
 
 #### Available CSS selectors
-- `#webring__embed-area`
+- `.webring__embed`
 - `.webring__not-found`
 - `.webring__title`
 - `.webring__description`
@@ -113,7 +117,7 @@ non-heavily trafficked page of your site.
 
 ## Development
 1. Install Python 3.14+, [uv](https://github.com/astral-sh/uv), and VS Code
-1. Set the required settings and configuration values in `webring/settings/local.py`
+1. Set required settings and any discretionary configuration values in `webring/settings/local.py`
 1. Run `uv sync`
 1. ~~Run tests with `poetry run pytest` or through VS Code~~
 
