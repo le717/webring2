@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django_softdelete.admin import GlobalObjectsModelAdmin
 
-from .models import Entry, LinkrotHistory, Webring
+from ..linkrot.models import LinkrotHistory
+from .models import Entry, Webring
 
 
 @admin.register(Webring)

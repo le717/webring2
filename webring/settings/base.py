@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "webring.core",
     "webring.embed",
+    "webring.linkrot",
 ]
 
 MIDDLEWARE = [

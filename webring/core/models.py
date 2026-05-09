@@ -21,12 +21,11 @@ class Webring(SoftDeleteModel):
         return f"{self.name} ({self.url})"
 
     def _asdict(self) -> dict[str, Any]:
-        return {k: v for k, v in model_to_dict(self).items() if k in self.public_fields()}
-
-    @staticmethod
-    def public_fields() -> list[str]:
-        """Define the fields that should be exposed to the public."""
-        return ["name", "url", "description", "author", "maintainer"]
+        return {
+            k: v
+            for k, v in model_to_dict(self).items()
+            if k in ["name", "url", "description", "author", "maintainer"]
+        }
 
     name = models.CharField(max_length=512, help_text=_("The webring's name."))
     url = models.URLField(verbose_name="URL", help_text=_("The URL of the webring."))
@@ -74,13 +73,8 @@ class Entry(SoftDeleteModel):
         return {
             k: getattr(self, k)
             for k in [f.name for f in self._meta.get_fields()]
-            if k in self.public_fields()
+            if k in ["title", "description", "url", "is_dead", "is_web_archive"]
         }
-
-    @staticmethod
-    def public_fields() -> list[str]:
-        """Define the fields that should be exposed to the public."""
-        return ["title", "description", "url", "is_dead", "is_web_archive"]
 
     uuid = models.UUIDField(
         unique=True,
@@ -121,36 +115,3 @@ class Entry(SoftDeleteModel):
         related_name="entries",
         help_text=_("The webring this entry belong to."),
     )
-
-
-class LinkrotHistory(models.Model):
-    class Meta:
-        verbose_name = "Entry history"
-        verbose_name_plural = "Entry histories"
-        db_table_comment = _("Audit log of linkrot checks.")
-
-    def _asdict(self) -> dict[str, Any]:
-        # We must be careful to properly extract the datetime fields, as they are excluded
-        # by `model_to_dict`
-        return {
-            k: getattr(self, k)
-            for k in [f.name for f in self._meta.get_fields()]
-            if k in self.public_fields()
-        }
-
-    @staticmethod
-    def public_fields() -> list[str]:
-        """Define the fields that should be exposed to the public."""
-        return ["date_added", "url", "was_alive", "message"]
-
-    date_added = models.DateTimeField(
-        auto_now_add=True, help_text=_("The datetime this check occurred.")
-    )
-    url = models.URLField(help_text=_("The URL checked."))
-    was_alive = models.BooleanField(
-        default=True,
-        verbose_name="URL was alive?",
-        help_text=_("Was the URL alive at the time of this check?"),
-    )
-    message = models.TextField(default="", help_text="Any message generated during the check.")
-    entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="history")
