@@ -95,6 +95,7 @@ non-heavily trafficked page of your site.
 - `.webring__not-found`
 - `.webring__title`
 - `.webring__description`
+- `.webring__no_entries`
 - `.webring__entry-title`
 - `.webring__entry-description`
 - `.webring__navigation`

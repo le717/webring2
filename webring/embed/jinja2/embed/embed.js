@@ -52,8 +52,15 @@ class Webring {
     qEmbedArea.innerHTML = `<p class="webring__title">${data.meta.name}</p>
       <p class="webring__description">${data.meta.description}</p>`;
 
+    // Handle no entries in this webring
+    if (data.entries.length === 0) {
+      qEmbedArea.insertAdjacentHTML(
+        "beforeend",
+        `<p class="webring__no_entries">There are no entries in this webring.</p>`
+      );
+      return null;
+    }
     // Generate the markup for each item in the webring
-    // TODO: Handle no entries
     const markup = ["<ul>"];
     data.entries.forEach((item) => {
       markup.push(
@@ -67,7 +74,6 @@ class Webring {
     qEmbedArea.insertAdjacentHTML("beforeend", markup.join(""));
 
     // If there's pagination information, generate navigation controls
-    // TODO: Handle invalid page pagination
     if (data.pagination) {
       let qNavigationArea = document.createElement("div");
       qNavigationArea.classList.add("webring__navigation");
