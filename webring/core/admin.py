@@ -50,7 +50,15 @@ class EntryAdmin(GlobalObjectsModelAdmin):
         "deleted_at",
         "instance",
     ]
-    fields = ["instance", "url", "title", "description", "is_dead", "is_web_archive"]
+    fields = [
+        "instance",
+        "url",
+        "title",
+        "description",
+        "is_dead",
+        "is_web_archive",
+        "uuid",
+    ]
     readonly_fields = ["uuid"]
     autocomplete_fields = ["instance"]
     ordering = ["instance", "title"]
