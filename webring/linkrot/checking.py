@@ -121,39 +121,29 @@ def check_all(slug: str) -> list[RotResult]:
     """Check all links for rotting."""
     return [
         check_one(link)
-        for link in Entry.objects.filter(
-            instance__slug=slug, include_dead=True, include_web_archive=False
-        )
+        for link in Entry.objects.filter(instance__slug=slug, is_dead=True, is_web_archive=False)
     ]
 
 
-def check_one(entry: Entry | str) -> RotResult | None:
+def check_one(entry: Entry) -> RotResult | None:
     """Check a single entry for rotting."""
-    # If we got an uuid string, then we need to look up the entry.
-    # If it doesn't exist in the db, we can't do anything
-    if not isinstance(entry, Entry):
-        try:
-            entry = Entry.objects.get(uuid=entry)
-        except Entry.DoesNotExist:
-            return None
-
-        # If the entry is already marked as a Web Archive entry, don't do anything more.
-        # We can't do much more because it's really hard to extract the original URL
-        # from a WA URL without a human looking at it
-        if entry.is_web_archive:
-            # logger.info({
-            #     "id": entry.uuid,
-            #     "url": entry.url,
-            #     "message": (
-            #         "Entry has previously been marked to as a Web Archive entry, not checking again."
-            #     ),
-            # })
-            times_failed = entry.history.filter(was_alive=False).count()
-            return RotResult(
-                id=entry.uuid,
-                url=entry.url,
-                result=Check(times_failed=times_failed, is_dead=False, is_web_archive=True),
-            )
+    # If the entry is already marked as a Web Archive entry, don't do anything more.
+    # We can't do much more because it's really hard to extract the original URL
+    # from a WA URL without a human looking at it
+    if entry.is_web_archive:
+        # logger.info({
+        #     "id": entry.uuid,
+        #     "url": entry.url,
+        #     "message": (
+        #         "Entry has previously been marked to as a Web Archive entry, not checking again."
+        #     ),
+        # })
+        times_failed = entry.history.filter(was_alive=False).count()
+        return RotResult(
+            id=entry.uuid,
+            url=entry.url,
+            result=Check(times_failed=times_failed, is_dead=False, is_web_archive=True),
+        )
 
     # Create a history record. It may be updated later with rot results
     history_entry = LinkrotHistory.objects.create(url=entry.url, entry=entry)

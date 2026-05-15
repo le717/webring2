@@ -1,4 +1,3 @@
-import dataclasses
 from http import HTTPStatus
 
 from django.db.models import QuerySet
@@ -6,20 +5,22 @@ from django.http import HttpRequest, JsonResponse
 from django.template.response import TemplateResponse
 from django.views.generic import ListView, View
 
+from .checking import check_all
 from .models import LinkrotHistory
 
 
 __all__ = ["LinkrotCheckAllView", "LinkrotCheckOneView", "LinkrotLinkHistoryView"]
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
-class RotResult: ...
-
-
 class LinkrotCheckAllView(View):
-    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    # TODO: enable this
+    # http_method_names = ["post"]
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # TODO: figure out auth
-        return JsonResponse({}, status=HTTPStatus.OK)
+        # TODO: change method back to post
+        r = check_all(self.kwargs["ring"])
+        return JsonResponse({"results": r}, status=HTTPStatus.OK)
 
 
 class LinkrotCheckOneView(View):
