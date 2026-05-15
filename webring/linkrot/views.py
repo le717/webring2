@@ -1,8 +1,10 @@
 import dataclasses
 from http import HTTPStatus
 
+from django.db.models import QuerySet
 from django.http import HttpRequest, JsonResponse
-from django.views.generic import View
+from django.template.response import TemplateResponse
+from django.views.generic import ListView, View
 
 from .models import LinkrotHistory
 
@@ -26,21 +28,32 @@ class LinkrotCheckOneView(View):
         return JsonResponse({}, status=HTTPStatus.OK)
 
 
-class LinkrotLinkHistoryView(View):
+class LinkrotLinkHistoryView(ListView):
     """View the linkrot checking results of a single entry."""
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # TODO: 404 is not working as expected
-        # TODO: figure out auth
+    http_method_names = ["get"]
+    model = LinkrotHistory
+    ordering = "-date_added"
 
-        try:
-            history = LinkrotHistory.objects.filter(
-                entry__instance__slug=kwargs["ring"], entry__uuid=kwargs["entry"]
-            ).all()
-        except LinkrotHistory.DoesNotExist:
+    def get_queryset(self) -> QuerySet:
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                entry__instance__slug=self.kwargs["ring"],
+                entry__uuid=self.kwargs["entry"],
+            )
+        )
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        # TODO: figure out auth
+        r: TemplateResponse = super().get(request, *args, **kwargs)
+
+        # We do not have any history for this entry
+        history: QuerySet = r.context_data["object_list"]
+        if not history:
             return JsonResponse(
                 {"message": "Linkrot history is not available for this entry."},
                 status=HTTPStatus.NOT_FOUND,
             )
-
         return JsonResponse({"history": [r._asdict() for r in history]}, status=HTTPStatus.OK)
