@@ -16,11 +16,13 @@ class RotResult: ...
 
 class LinkrotCheckAllView(View):
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        # TODO: figure out auth
         return JsonResponse({}, status=HTTPStatus.OK)
 
 
 class LinkrotCheckOneView(View):
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        # TODO: figure out auth
         return JsonResponse({}, status=HTTPStatus.OK)
 
 
@@ -28,7 +30,9 @@ class LinkrotLinkHistoryView(View):
     """View the linkrot checking results of a single entry."""
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # TODO: 404 is not workgin as expected
+        # TODO: 404 is not working as expected
+        # TODO: figure out auth
+
         try:
             history = LinkrotHistory.objects.filter(
                 entry__instance__slug=kwargs["ring"], entry__uuid=kwargs["entry"]
