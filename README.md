@@ -112,7 +112,10 @@ no longer available can be a maintenance burden. To that end, this webring has b
 detection. However, it is not automatically set up and must be configured on your server.
 
 The entire webring can be checked for rotten links by issuing an authenticated `POST` request to
-the `/linkrot/` endpoint
+the `/linkrot/<webring-slug>` endpoint.
+
+A full history of linkrot checks for an individual entry is available by making a~~n authenticated~~
+`GET` request to `/linkrot/<webring-slug>/<uuid>/history`.
 
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)
@@ -152,8 +155,6 @@ Individual entries, including dead entries, can also be checked.
 One way to configure the linkrot check to run automatically is to create a Python script that
 makes the aforementioned `POST` request and schedule it to automatically run via some scheduler.
 
-Starting with version 1.4.1, a full history of linkrot checks are available for individual entries
-by making an authenticated `GET` request to `/linkrot/<uuid>/history`.
 
 ### Discord channel logger
 If the [Discord](https://discord.com) logger is enabled and configured, entries that are found to be

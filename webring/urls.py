@@ -25,3 +25,5 @@ urlpatterns = [
     path("linkrot/", include("webring.linkrot.urls", namespace="linkrot")),
     path("", include("webring.core.urls", namespace="core")),
 ]
+
+# TODO: http404 page
