@@ -104,10 +104,20 @@ non-heavily trafficked page of your site.
 - `.webring__navigation__link-next`
 - `.webring__navigation__page-counts`
 
+### Rotting links checking
+Because websites can and will eventually vanish, even after
+[a few months](https://brisray.com/web/linkrot.htm), link rot is a real
+problem for webrings. As they are manually curated and maintained, knowing if an entry is
+no longer available can be a maintenance burden. To that end, this webring has built-in rotten link
+detection. However, it is not automatically set up and must be configured on your server.
+
+The entire webring can be checked for rotten links by issuing an authenticated `POST` request to
+the `/linkrot/` endpoint
+
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)
-- ~~Integer number of times supposed rotted links should be checked~~
-  ~~(`TIMES_FAILED_THRESHOLD`, default: 10)~~
+- Integer number of times supposed rotted links should be checked
+  (`TIMES_FAILED_THRESHOLD`, default: `10`)
 - ~~Discord linkrot event logging boolean (`DISCORD_LOGGING_ENABLE`, default: `False`)~~
   - ~~Discord webhook URL (`DISCORD_WEBHOOK_URL`)~~
 - Webring entry filtering
@@ -130,14 +140,7 @@ non-heavily trafficked page of your site.
 # NOTE: Nearly everything past this point is not yet relevant to this project
 
 ### Rotting links checking
-Because websites can and will eventually vanish, even after
-[a few months](https://brisray.com/web/linkrot.htm), link rot is a real
-problem for webrings. As they are manually curated and maintained, knowing if an entry is
-no longer available can be a maintenance burden. To that end, this webring has built-in rotten link
-detection. However, it is not automatically set up and must be configured on your server.
-
-The entire webring can be checked for rotten links by issuing an authenticated `POST` request to
-the `/linkrot/` endpoint. Each entry that has not previously been determined to be dead will
+Each entry that has not previously been determined to be dead will
 be checked for a 200, 201, 204, or 304 HTTP response. If a URL fails that check, that failure
 will be recorded. Once the check has failed more than the configured `TIMES_FAILED_THRESHOLD` limit,
 the [Web Archive](https://web.archive.org/) will be checked for an archived version. If found,
