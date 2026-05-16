@@ -9,7 +9,7 @@ from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
 
 from .models import Entry, Webring
-from .tools import get_app_info, truthy_str_to_bool
+from .tools import get_app_info, get_webring, truthy_str_to_bool
 
 
 __all__ = ["EntryView", "WebringListView"]
@@ -75,10 +75,6 @@ class WebringListView(ListView):
     http_method_names = ["head", "get"]
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
-    def get_webring(self) -> Webring | None:
-        """Attempt to find a webring with the given slug."""
-        return Webring.objects.filter(slug=self.kwargs["ring"]).first()
-
     def get_queryset(self) -> QuerySet:
         filters: dict[str, bool | str] = {}
         qs = super().get_queryset().filter(instance__slug=self.kwargs["ring"])
@@ -114,7 +110,7 @@ class WebringListView(ListView):
             self.qs_filters["origin"] = request.headers.get("Origin", "")
 
         # Handle not finding a webring with the given slug
-        if (webring := self.get_webring()) is None:
+        if (webring := get_webring(self.kwargs["ring"])) is None:
             return JsonResponse(
                 WebringListResponse(meta=None)._asdict(), status=HTTPStatus.NOT_FOUND
             )

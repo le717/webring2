@@ -2,6 +2,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from .models import Webring
+
 
 __all__ = ["get_app_info", "truthy_str_to_bool"]
 
@@ -22,3 +24,8 @@ def truthy_str_to_bool(val: bool | str | None) -> bool:
     if val is None:
         return False
     return val.lower() == "true"
+
+
+def get_webring(slug: str) -> Webring | None:
+    """Attempt to find a webring with the given slug."""
+    return Webring.objects.filter(slug=slug).first()
