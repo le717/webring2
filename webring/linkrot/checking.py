@@ -71,8 +71,7 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
     # # We've failed the rot check less than the allowed threshold, only issue a warning
     if times_failed <= settings.TIMES_FAILED_THRESHOLD:
         message = (
-            f"Entry has failed the linkrot check {times_failed:,} "
-            f"{pluralize('time', times_failed)}."
+            f"Entry has failed the linkrot check {times_failed:,} time{pluralize(times_failed)}."
         )
         # logger.error({
         #     "id": entry.uuid,
@@ -118,14 +117,11 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
 
 
 def check_all(slug: str) -> list[RotResult]:
-    """Check all links for rotting."""
-    return [
-        check_one(link)
-        for link in Entry.objects.filter(instance__slug=slug, is_dead=True, is_web_archive=False)
-    ]
+    """Check all non-dead links for rotting."""
+    return [check_one(link) for link in Entry.objects.filter(instance__slug=slug, is_dead=False)]
 
 
-def check_one(entry: Entry) -> RotResult | None:
+def check_one(entry: Entry) -> RotResult:
     """Check a single entry for rotting."""
     # If the entry is already marked as a Web Archive entry, don't do anything more.
     # We can't do much more because it's really hard to extract the original URL

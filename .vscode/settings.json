@@ -3,14 +3,13 @@
     "UV_LINK_MODE": "copy"
   },
   "ruff.enable": true,
-  "ruff.importStrategy": "useBundled",
+  "ruff.importStrategy": "fromEnvironment",
   "ruff.fixAll": true,
   "ruff.organizeImports": true,
   "ruff.codeAction.fixViolation": {
     "enable": true,
   },
   "editor.formatOnSave": true,
-  "files.autoSave": "onWindowChange",
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",

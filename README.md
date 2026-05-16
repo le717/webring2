@@ -109,10 +109,17 @@ Because websites can and will eventually vanish, even after
 [a few months](https://brisray.com/web/linkrot.htm), link rot is a real
 problem for webrings. As they are manually curated and maintained, knowing if an entry is
 no longer available can be a maintenance burden. To that end, this webring has built-in rotten link
-detection. However, it is not automatically set up and must be configured on your server.
+detection.
 
-The entire webring can be checked for rotten links by issuing an authenticated `POST` request to
-the `/linkrot/<webring-slug>` endpoint.
+Automatic linkrot detection is not automatically set up and must be configured on your server.
+One way to configure the linkrot check to run automatically is to create a Python script that
+makes the proper request(s) and schedule it to automatically run via some scheduler.
+
+The entire webring can be checked for rotten links by issuing a~~n authenticated~~ `POST` request to
+the `/linkrot/<webring-slug>` endpoint. Dead entries are not included in the check.
+
+Individual entries, including dead entries, can also be checked, by issuing a~~n authenticated~~
+`POST` request to the `/linkrot/<webring-slug>/<uuid>/` endpoint.
 
 A full history of linkrot checks for an individual entry is available by making a~~n authenticated~~
 `GET` request to `/linkrot/<webring-slug>/<uuid>/history`.
@@ -149,11 +156,6 @@ will be recorded. Once the check has failed more than the configured `TIMES_FAIL
 the [Web Archive](https://web.archive.org/) will be checked for an archived version. If found,
 the entry will be updated to use that link and the title will be adjusted to note such.
 If there is no archived version, the entry will be recorded as dead and the title adjusted.
-
-Individual entries, including dead entries, can also be checked.
-
-One way to configure the linkrot check to run automatically is to create a Python script that
-makes the aforementioned `POST` request and schedule it to automatically run via some scheduler.
 
 
 ### Discord channel logger

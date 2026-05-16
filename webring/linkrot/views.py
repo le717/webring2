@@ -13,26 +13,31 @@ __all__ = ["LinkrotCheckAllView", "LinkrotCheckOneView", "LinkrotLinkHistoryView
 
 
 class LinkrotCheckAllView(View):
-    # TODO: enable this
-    # http_method_names = ["post"]
+    """Check an entire webring for rotting entries."""
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    http_method_names = ["head", "post"]
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # TODO: figure out auth
-        # TODO: change method back to post
-        r = check_all(self.kwargs["ring"])
-        return JsonResponse({"results": r}, status=HTTPStatus.OK)
+        # TODO: option to include dead entries in check
+        return JsonResponse({"results": check_all(self.kwargs["ring"])}, status=HTTPStatus.OK)
 
 
 class LinkrotCheckOneView(View):
+    """Check a single entry in a webring for rotting."""
+
+    http_method_names = ["head", "post"]
+
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # TODO: figure out auth
+        # TODO: impl this
         return JsonResponse({}, status=HTTPStatus.OK)
 
 
 class LinkrotLinkHistoryView(ListView):
     """View the linkrot checking results of a single entry."""
 
-    http_method_names = ["get"]
+    http_method_names = ["head", "get"]
     model = LinkrotHistory
     ordering = "-date_added"
 
