@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django_softdelete.models import SoftDeleteModel
 
 
-__all__ = ["Entry", "Webring"]
+__all__ = ["Entry", "Webring", "WebringAPIKey"]
 
 
 class Webring(SoftDeleteModel):
@@ -43,16 +43,31 @@ class Webring(SoftDeleteModel):
             "A brief description of the webring's purpose or intention. Should be short(er)."
         ),
     )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Indicate if this webring is live, meaning it can be viewed and traversed.",
+    )
+
+
+class WebringAPIKey(SoftDeleteModel):
     api_key = models.CharField(
         max_length=512,
         blank=True,
         default=token_hex,
         verbose_name="Admin API key",
-        help_text="The admin API key for accessing protected routes.",
+        help_text="An API key for accessing protected routes for this webring.",
     )
     is_active = models.BooleanField(
-        default=True,
-        help_text="Indicate if this webring is live, meaning it can be viewed and traversed.",
+        default=False,
+        help_text=_(
+            "Indicate if this API key is active and can be used to access protected routres"
+        ),
+    )
+    instance = models.ForeignKey(
+        Webring,
+        on_delete=models.CASCADE,
+        related_name="api_keys",
+        help_text=_("The webring this API key belong to."),
     )
 
 

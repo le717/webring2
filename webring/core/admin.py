@@ -7,6 +7,7 @@ from .models import Entry, Webring
 
 @admin.register(Webring)
 class WebringAdmin(GlobalObjectsModelAdmin):
+    # TODO: add api keys inline
     list_display = [
         "name",
         "slug",
