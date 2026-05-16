@@ -50,9 +50,11 @@ class Webring(SoftDeleteModel):
 
 
 class WebringAPIKey(SoftDeleteModel):
+    def __str__(self) -> str:
+        return f"Webing API key for {self.instance.name}"
+
     api_key = models.CharField(
         max_length=512,
-        blank=True,
         default=token_hex,
         verbose_name="Admin API key",
         help_text="An API key for accessing protected routes for this webring.",
@@ -60,8 +62,11 @@ class WebringAPIKey(SoftDeleteModel):
     is_active = models.BooleanField(
         default=False,
         help_text=_(
-            "Indicate if this API key is active and can be used to access protected routres"
+            "Indicate if this API key is active and can be used to access protected routes."
         ),
+    )
+    date_added = models.DateTimeField(
+        auto_now_add=True, help_text=_("The datetime this API key was created.")
     )
     instance = models.ForeignKey(
         Webring,
@@ -69,6 +74,9 @@ class WebringAPIKey(SoftDeleteModel):
         related_name="api_keys",
         help_text=_("The webring this API key belong to."),
     )
+
+    class Meta:
+        verbose_name = "Webring API key"
 
 
 class Entry(SoftDeleteModel):
@@ -110,7 +118,7 @@ class Entry(SoftDeleteModel):
     is_dead = models.BooleanField(
         default=False,
         verbose_name="Entry is dead?",
-        help_text=_("Indicate if this entry is dead (i.e., cannot be accessed anymore.)"),
+        help_text=_("Indicate if this entry is dead (i.e., cannot be accessed anymore)."),
     )
     is_web_archive = models.BooleanField(
         default=False,

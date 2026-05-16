@@ -23,7 +23,6 @@ class LinkrotHistory(models.Model):
     class Meta:
         verbose_name = "Entry history"
         verbose_name_plural = "Entry histories"
-        db_table_comment = _("Audit log of linkrot checks.")
 
     def _asdict(self) -> dict[str, Any]:
         # We must be careful to properly extract the datetime fields, as they are excluded

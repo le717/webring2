@@ -1,0 +1,5 @@
+/* Hide the __str__ represenation of some of the inlines */
+.dynamic-api_keys .original p,
+.dynamic-history .original p {
+  display: none;
+}

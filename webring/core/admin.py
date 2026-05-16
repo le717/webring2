@@ -1,13 +1,24 @@
 from django.contrib import admin
+from django.http import HttpRequest
 from django_softdelete.admin import GlobalObjectsModelAdmin
 
 from ..linkrot.models import LinkrotHistory
-from .models import Entry, Webring
+from .models import Entry, Webring, WebringAPIKey
+
+
+class WebringAPIKeyInline(admin.TabularInline):
+    model = WebringAPIKey
+    fields = ["api_key", "is_active"]
+    # readonly_fields = ["date_added", "api_key"]
+    extra = 0
+
+    def get_readonly_fields(self, request: HttpRequest, obj) -> list[str]:
+        return [*super().get_readonly_fields(request, obj), "api_key"]
 
 
 @admin.register(Webring)
 class WebringAdmin(GlobalObjectsModelAdmin):
-    # TODO: add api keys inline
+    inlines = [WebringAPIKeyInline]
     list_display = [
         "name",
         "slug",
@@ -24,6 +35,9 @@ class WebringAdmin(GlobalObjectsModelAdmin):
     ordering = ["name", "is_active"]
     search_fields = ["name", "url", "author", "maintainer"]
     search_help_text = "Search by webring name, url, author, or maintainer."
+
+    class Media:
+        css = {"all": ("core/css/core-admin.css",)}
 
 
 class LinkrotHistoryInline(admin.TabularInline):
@@ -65,3 +79,6 @@ class EntryAdmin(GlobalObjectsModelAdmin):
     ordering = ["instance", "title"]
     search_fields = ["title", "description", "url"]
     search_help_text = "Search by entry title, description, or URL."
+
+    class Media:
+        css = {"all": ("core/css/core-admin.css",)}

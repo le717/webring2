@@ -131,6 +131,14 @@ Individual entries, including dead entries, can also be checked, by issuing a~~n
 A full history of linkrot checks for an individual entry is available by making a~~n authenticated~~
 `GET` request to `/linkrot/<webring-slug>/<uuid>/history`.
 
+### Auth key creation/management
+All administrative operations (effectively anything except fetching the webring entries) are
+protected by an auth key. The system is intentionally kept extremely simple. ~~Any string of
+characters can be used as a key. All keys are defined as a JSON list called `AUTH_KEYS`. The key is
+to be passed to the request via the HTTP `Authorization` header as a `Bearer` token. If the key is
+not provided, a `400 BAD REQUEST` HTTP error is raised. If it is not in the list, a `403 FORBIDDEN`
+HTTP error is raised.~~
+
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)
 - Integer number of times supposed rotted links should be checked
@@ -168,15 +176,6 @@ is kept as simple as possible.
 the `DISCORD_WEBHOOK_URL` secret key
 
 A text file logger for events is always configured.
-
-### Auth key creation/management
-
-All administrative operations (effectively anything except fetching the webring entries) are
-protected by an auth key. The system is intentionally kept extremely simple. Any string of
-characters can be used as a key. All keys are defined as a JSON list called `AUTH_KEYS`. The key is
-to be passed to the request via the HTTP `Authorization` header as a `Bearer` token. If the key is
-not provided, a `400 BAD REQUEST` HTTP error is raised.  If it is not in the list, a `403 FORBIDDEN`
-HTTP error is raised.
 
 ## Build
 Webring2 uses Docker to help isolate instances. It is possible to run without Docker,
