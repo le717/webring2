@@ -11,6 +11,7 @@ from django_smart_ratelimit import rate_limit
 
 from .models import Entry, Webring
 from .tools import get_app_info, get_webring, truthy_str_to_bool
+from .view_mixins import RequireAuthMixin
 
 
 __all__ = ["EntryView", "WebringListView"]
@@ -147,10 +148,10 @@ class WebringListView(ListView):
 
 
 # TODO: impl this
-class EntryCreateView(CreateView): ...
-
-
-# TODO: impl this
 class EntryView(DetailView):
     model = Entry
     # pk_url_kwarg = "webring"
+
+
+# TODO: impl this
+class EntryCreateView(RequireAuthMixin, CreateView): ...
