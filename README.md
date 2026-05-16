@@ -111,6 +111,12 @@ problem for webrings. As they are manually curated and maintained, knowing if an
 no longer available can be a maintenance burden. To that end, this webring has built-in rotten link
 detection.
 
+Each entry that has not previously been determined to be dead will be checked for a 200, 201, 204,
+or 304 HTTP response. If a URL fails that check, that failure will be recorded. Once the check has
+failed more than the configured `TIMES_FAILED_THRESHOLD` limit, the
+[Web Archive](https://web.archive.org/) will be checked for an archived version. If found, the entry
+will be updated to use that link. If there is no archived version, the entry will be marked as dead.
+
 Automatic linkrot detection is not automatically set up and must be configured on your server.
 One way to configure the linkrot check to run automatically is to create a Python script that
 makes the proper request(s) and schedule it to automatically run via some scheduler.
@@ -149,15 +155,6 @@ A full history of linkrot checks for an individual entry is available by making 
 [MIT](LICENSE)
 
 # NOTE: Nearly everything past this point is not yet relevant to this project
-
-### Rotting links checking
-Each entry that has not previously been determined to be dead will
-be checked for a 200, 201, 204, or 304 HTTP response. If a URL fails that check, that failure
-will be recorded. Once the check has failed more than the configured `TIMES_FAILED_THRESHOLD` limit,
-the [Web Archive](https://web.archive.org/) will be checked for an archived version. If found,
-the entry will be updated to use that link and the title will be adjusted to note such.
-If there is no archived version, the entry will be recorded as dead and the title adjusted.
-
 
 ### Discord channel logger
 If the [Discord](https://discord.com) logger is enabled and configured, entries that are found to be
