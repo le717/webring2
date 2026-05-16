@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, Page
 from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, JsonResponse
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django_smart_ratelimit import rate_limit
 
 from .models import Entry, Webring
@@ -14,7 +14,7 @@ from .tools import get_app_info, get_webring, truthy_str_to_bool
 from .view_mixins import RequireAuthMixin
 
 
-__all__ = ["EntryView", "WebringListView"]
+__all__ = ["EntryCreateView", "EntryDeleteView", "EntryUpdateView", "WebringListView"]
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -148,10 +148,14 @@ class WebringListView(ListView):
 
 
 # TODO: impl this
-class EntryView(DetailView):
+class EntryCreateView(RequireAuthMixin, CreateView): ...
+
+
+# TODO: impl this
+class EntryDeleteView(RequireAuthMixin, DeleteView):
     model = Entry
     # pk_url_kwarg = "webring"
 
 
 # TODO: impl this
-class EntryCreateView(RequireAuthMixin, CreateView): ...
+class EntryUpdateView(RequireAuthMixin, UpdateView): ...
