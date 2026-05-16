@@ -5,7 +5,7 @@
 ## Features
 - Multiple webrings per application instance
 - JavaScript to alow simple embedding and display
-- ~~Linkrot checking, with Web Archive fallback url for dead links (when possible)~~
+- Linkrot checking, with Web Archive fallback url for dead links (when possible)
 - ~~Optional linkrot event logging to [Discord](https://discord.com/) channel~~
 
 > ℹ️ **Note** <br>
