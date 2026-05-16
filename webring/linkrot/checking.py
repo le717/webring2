@@ -24,7 +24,7 @@ class Check(TypedDict):
 
 
 class RotResult(TypedDict):
-    id: str
+    uuid: str
     url: str
     result: Check
 
@@ -40,7 +40,7 @@ def __can_reach_site(url: str) -> bool:
         }
     except httpx.HTTPError:
         # logger.info({
-        #     "id": "N/A",
+        #     "uuid": "N/A",
         #     "url": url,
         #     "message": "Link could not be reached during a linkrot check.",
         # })
@@ -74,7 +74,7 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
             f"Entry has failed the linkrot check {times_failed:,} time{pluralize(times_failed)}."
         )
         # logger.error({
-        #     "id": entry.uuid,
+        #     "uuid": entry.uuid,
         #     "url": entry.url,
         #     "message": message,
         # })
@@ -93,7 +93,7 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
         result["is_web_archive"] = True
         message = "Entry has been updated to indicate a Web Archive reference."
         # logger.info({
-        #     "id": entry.uuid,
+        #     "uuid": entry.uuid,
         #     "url": old_url,
         #     "message": message,
         # })
@@ -107,7 +107,7 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
     result["is_dead"] = True
     message = "Entry has been marked as a dead link."
     # logger.critical({
-    #     "id": entry.uuid,
+    #     "uuid": entry.uuid,
     #     "url": entry.url,
     #     "message": message,
     # })
@@ -133,7 +133,7 @@ def check_one(entry: Entry) -> RotResult:
     # from a WA URL without a human looking at it
     if entry.is_web_archive:
         # logger.info({
-        #     "id": entry.uuid,
+        #     "uuid": entry.uuid,
         #     "url": entry.url,
         #     "message": (
         #         "Entry has previously been marked to as a Web Archive entry, not checking again."
@@ -141,7 +141,7 @@ def check_one(entry: Entry) -> RotResult:
         # })
         times_failed = entry.history.filter(was_alive=False).count()
         return RotResult(
-            id=entry.uuid,
+            uuid=entry.uuid,
             url=entry.url,
             result=Check(times_failed=times_failed, is_dead=False, is_web_archive=True),
         )
@@ -157,12 +157,12 @@ def check_one(entry: Entry) -> RotResult:
             history_entry.message = message
             history_entry.save(update_fields={"message"})
             # logger.info({
-            #     "id": entry.uuid,
+            #     "uuid": entry.uuid,
             #     "url": entry.url,
             #     "message": message,
             # })
             return RotResult(
-                id=entry.uuid,
+                uuid=entry.uuid,
                 url=entry.url,
                 result=Check(times_failed=0, is_dead=False, is_web_archive=False),
             )
@@ -175,19 +175,19 @@ def check_one(entry: Entry) -> RotResult:
         entry.is_web_archive = False
         entry.save(update_fields={"is_dead", "is_web_archive"})
         # logger.info({
-        #     "id": entry.uuid,
+        #     "uuid": entry.uuid,
         #     "url": entry.url,
         #     "message": message,
         # })
         return RotResult(
-            id=entry.uuid,
+            uuid=entry.uuid,
             url=entry.url,
             result=Check(times_failed=0, is_dead=False, is_web_archive=False),
         )
 
-    # # We could not ping the site, determine if it is dead or WA-only entry
-    # # and update our history record accordingly
+    # We could not ping the site, determine if it is dead or WA-only entry
+    # and update our history record accordingly
     history_entry.was_alive = False
     history_entry.save(update_fields={"was_alive"})
     result = __record_failure(entry, history_entry)
-    return RotResult(id=entry.uuid, url=entry.url, result=result)
+    return RotResult(uuid=entry.uuid, url=entry.url, result=result)

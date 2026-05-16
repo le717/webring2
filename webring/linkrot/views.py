@@ -5,8 +5,9 @@ from django.http import HttpRequest, JsonResponse
 from django.template.response import TemplateResponse
 from django.views.generic import ListView, View
 
+from ..core.models import Entry
 from ..core.tools import truthy_str_to_bool
-from .checking import check_all
+from .checking import check_all, check_one
 from .models import LinkrotHistory
 
 
@@ -34,8 +35,14 @@ class LinkrotCheckOneView(View):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # TODO: figure out auth
-        # TODO: impl this
-        return JsonResponse({}, status=HTTPStatus.OK)
+        try:
+            entry = Entry.objects.get(instance__slug=self.kwargs["ring"], uuid=self.kwargs["entry"])
+            return JsonResponse({"results": [check_one(entry)]}, status=HTTPStatus.OK)
+        except Entry.DoesNotExist:
+            return JsonResponse(
+                {"message": "That entry does not exist in the requested webring."},
+                status=HTTPStatus.NOT_FOUND,
+            )
 
 
 class LinkrotLinkHistoryView(ListView):
