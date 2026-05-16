@@ -8,14 +8,11 @@ from django.utils.translation import gettext_lazy as _
 from django_softdelete.models import SoftDeleteModel
 
 
-__all__ = ["Entry", "LinkrotHistory", "Webring"]
+__all__ = ["Entry", "Webring"]
 
 
 class Webring(SoftDeleteModel):
     """Represent a single webring instance."""
-
-    class Meta:
-        db_table_comment = _("Store the individual webring instances being run on this app.")
 
     def __str__(self) -> str:
         return f"{self.name} ({self.url})"
@@ -60,10 +57,6 @@ class Webring(SoftDeleteModel):
 
 
 class Entry(SoftDeleteModel):
-    class Meta:
-        verbose_name_plural = "Entries"
-        db_table_comment = _("Store the entries for an individual webring.")
-
     def __str__(self) -> str:
         return self.title
 
@@ -115,3 +108,6 @@ class Entry(SoftDeleteModel):
         related_name="entries",
         help_text=_("The webring this entry belong to."),
     )
+
+    class Meta:
+        verbose_name_plural = "Entries"

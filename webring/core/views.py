@@ -72,7 +72,7 @@ class WebringListView(ListView):
     model = Entry
     ordering = "title"
     paginate_by: int = settings.FILTER_ENTRIES_PER_PAGE
-    http_method_names: list[str] = ["head", "get"]
+    http_method_names = ["head", "get"]
     qs_filters: dict[str, bool | str] = {"origin": ""}
 
     def get_webring(self) -> Webring | None:

@@ -22,15 +22,22 @@ source = "https://github.com/le717/webring2.git"
 changelog = "https://github.com/le717/webring2/blob/main/CHANGES.md"
 
 [dependency-groups]
-dev = ["uv", "ruff", "ty", "django-stubs>=6.0.3"]
+dev = ["uv", "ruff", "django-stubs>=6.0.3"]
 
 [tool.ruff]
 indent-width = 4
 line-length = 100
+extend-exclude = ["webring/*/migrations"]
 
 [tool.ruff.lint]
 preview = true
-extend-ignore = ["DJ008", "DJ012"]
+extend-ignore = [
+    "DJ008",  # django-model-without-dunder-str
+    "TD002",  # missing-todo-author
+    "TD003",  # missing-todo-link
+    "RUF067", # non-empty-init-module
+    "RUF012", # mutable-class-default
+]
 extend-select = [
     "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
@@ -40,8 +47,10 @@ extend-select = [
     "RET", # flake8-return
     "SIM", # flake8-simplify
     "TD",  # flake8-todos
+    "TRY", # tryceratops
     "UP",  # pyupgrade
     "RUF", # ruff-specific
+    "YTT", # flake8-2020
 ]
 
 [tool.ruff.format]

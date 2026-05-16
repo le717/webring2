@@ -66,7 +66,7 @@ TEMPLATES = [
         "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
-            "environment": "webring.settings.jinja2.environment",
+            "environment": "jinja2.Environment",
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
