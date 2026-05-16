@@ -13,6 +13,7 @@ _base_settings = (
     "base.py",
     "audit.py",
     "i18n.py",
+    "rate_limiting.py",
     optional("local.py"),
 )
 include(*_base_settings)

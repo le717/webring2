@@ -7,6 +7,7 @@ from django.core.paginator import EmptyPage, Page
 from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import CreateView, DetailView, ListView
+from django_smart_ratelimit import rate_limit
 
 from .models import Entry, Webring
 from .tools import get_app_info, get_webring, truthy_str_to_bool
@@ -92,6 +93,7 @@ class WebringListView(ListView):
             filters["is_web_archive"] = False
         return qs.filter(**filters)
 
+    @rate_limit(key="ip", block=True)
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         # Respect any filtering arguments provided in the request, falling back
         # to app-level defaults if they are not provided
@@ -144,9 +146,11 @@ class WebringListView(ListView):
         )
 
 
+# TODO: impl this
 class EntryCreateView(CreateView): ...
 
 
+# TODO: impl this
 class EntryView(DetailView):
     model = Entry
     # pk_url_kwarg = "webring"

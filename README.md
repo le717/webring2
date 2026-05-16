@@ -23,7 +23,7 @@ The following items are new or different in Webring2:
 * Multiple rings are supported by a single hosted instance, rather than one ring per instance
 * Rings are identifiable by slugs, rather than UUIDs
 * Web-based admin interface for instance management of rings and entries
-* ~~Rate-limiting on endpoints, to help prevent flooding and DDoS attacks~~ not yet
+* Rate-limiting on endpoints, to help prevent flooding and DDoS attacks
 * Webring and entry soft-deletion, in case of accidental removals
 * Entry pagination, for navigation through a ring
 
@@ -140,9 +140,22 @@ protected by an auth key. The system is intentionally kept extremely simple.
 - API keys are automatically generated via the Django admin interface. To activate a key, mark it
   as "active."
 - If an API key is not provided, does not belong to the webring, or is not active,
-  a `403 FORBIDDEN` HTTP error is raised.
+  a `403 Forbidden` HTTP error is raised.
+
+### Rate limiting
+Rate limiting is applied to each endpoint except the `embed` endpoint. By default, it's set to 100
+requests per minute. If it is exceeded, a `429 Too Many Requests` HTTP error is raised.
+
+To change the configuration, consult the
+[django-smart-ratelimit](https://pypi.org/project/django-smart-ratelimit/) documentation.
+
+>❓ Need more configuration?<br>
+Rate limiting is intentionally limited in configuration. If more fine-grained control is needed,
+please file an issue and let's talk about it!
 
 ## Required Secret/Configuration Keys
+These values can be set or overridden by defining them in the `webring/settings/local.py` file.
+
 - Django secret key (`SECRET_KEY`)
 - Integer number of times supposed rotted links should be checked
   (`TIMES_FAILED_THRESHOLD`, default: `10`)
@@ -156,9 +169,8 @@ protected by an auth key. The system is intentionally kept extremely simple.
 
 ## Development
 1. Install Python 3.14+, [uv](https://github.com/astral-sh/uv), and VS Code
-1. Set required settings and any discretionary configuration values in `webring/settings/local.py`
+1. Set required settings and any discretionary configuration values
 1. Run `uv sync`
-1. ~~Run tests with `poetry run pytest` or through VS Code~~
 
 ## License
 2026 Caleb

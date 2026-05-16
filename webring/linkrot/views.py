@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.template.response import TemplateResponse
 from django.views.generic import ListView, View
+from django_smart_ratelimit import rate_limit
 
 from ..core.auth import check_auth
 from ..core.models import Entry
@@ -20,6 +21,7 @@ class LinkrotCheckAllView(View):
 
     http_method_names = ["head", "post"]
 
+    @rate_limit(key="ip", block=True)
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # Determine if this an authorized request
         is_authorized = check_auth(
@@ -43,6 +45,7 @@ class LinkrotCheckOneView(View):
 
     http_method_names = ["head", "post"]
 
+    @rate_limit(key="ip", block=True)
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # Determine if this an authorized request
         is_authorized = check_auth(
@@ -81,6 +84,7 @@ class LinkrotLinkHistoryView(ListView):
             )
         )
 
+    @rate_limit(key="ip", rate="1/m", block=True)
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # Determine if this an authorized request
         is_authorized = check_auth(
