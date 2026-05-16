@@ -65,8 +65,8 @@ class Webring {
     data.entries.forEach((item) => {
       markup.push(
         `<li>
-          <a class="webring__entry-title" href="${item.url}">${item.title}</a><br>
-          <span class="webring__entry-description">${item.description}</span>
+          <a class="webring__entry__title" href="${item.url}">${item.title}</a><br>
+          <span class="webring__entry__description">${item.description}</span>
         </li>`,
       );
     });

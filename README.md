@@ -96,8 +96,8 @@ non-heavily trafficked page of your site.
 - `.webring__title`
 - `.webring__description`
 - `.webring__no_entries`
-- `.webring__entry-title`
-- `.webring__entry-description`
+- `.webring__entry__title`
+- `.webring__entry__description`
 - `.webring__navigation`
 - `.webring__navigation__all_entries`
 - `.webring__navigation__link-prev`
