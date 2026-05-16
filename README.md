@@ -111,6 +111,9 @@ problem for webrings. As they are manually curated and maintained, knowing if an
 no longer available can be a maintenance burden. To that end, this webring has built-in rotten link
 detection.
 
+> 📖 **Further Reading** <br> If you want to learn more about the vanishing web, the Web Archive has
+[published a book](https://archive.org/details/vanishing-culture-2026/mode/2up) on the topic.
+
 Each entry that has not previously been determined to be dead will be checked for a 200, 201, 204,
 or 304 HTTP response. If a URL fails that check, that failure will be recorded. Once the check has
 failed more than the configured `TIMES_FAILED_THRESHOLD` limit, the
@@ -121,23 +124,23 @@ Automatic linkrot detection is not automatically set up and must be configured o
 One way to configure the linkrot check to run automatically is to create a Python script that
 makes the proper request(s) and schedule it to automatically run via some scheduler.
 
-The entire webring can be checked for rotten links by issuing a~~n authenticated~~ `POST` request to
+The entire webring can be checked for rotten links by issuing an authenticated `POST` request to
 the `/linkrot/<webring-slug>` endpoint. By default, dead entries are not included in the check.
 Provide the `?include_dead=true` query parameter to include them.
 
-Individual entries, including dead entries, can also be checked, by issuing a~~n authenticated~~
+Individual entries, including dead entries, can also be checked, by issuing an authenticated
 `POST` request to the `/linkrot/<webring-slug>/<uuid>/` endpoint.
 
-A full history of linkrot checks for an individual entry is available by making a~~n authenticated~~
+A full history of linkrot checks for an individual entry is available by making an authenticated
 `GET` request to `/linkrot/<webring-slug>/<uuid>/history`.
 
 ### Auth key creation/management
 All administrative operations (effectively anything except fetching the webring entries) are
-protected by an auth key. The system is intentionally kept extremely simple. ~~Any string of
-characters can be used as a key. All keys are defined as a JSON list called `AUTH_KEYS`. The key is
-to be passed to the request via the HTTP `Authorization` header as a `Bearer` token. If the key is
-not provided, a `400 BAD REQUEST` HTTP error is raised. If it is not in the list, a `403 FORBIDDEN`
-HTTP error is raised.~~
+protected by an auth key. The system is intentionally kept extremely simple.
+- API keys are automatically generated via the Django admin interface. To activate a key, mark it
+  as "active."
+- If an API key is not provided, does not belong to the webring, or is not active,
+  a `403 FORBIDDEN` HTTP error is raised.
 
 ## Required Secret/Configuration Keys
 - Django secret key (`SECRET_KEY`)

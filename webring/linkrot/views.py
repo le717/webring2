@@ -5,8 +5,9 @@ from django.http import HttpRequest, JsonResponse
 from django.template.response import TemplateResponse
 from django.views.generic import ListView, View
 
+from ..core.auth import check_auth
 from ..core.models import Entry
-from ..core.tools import truthy_str_to_bool
+from ..core.tools import get_webring, truthy_str_to_bool
 from .checking import check_all, check_one
 from .models import LinkrotHistory
 
@@ -20,8 +21,17 @@ class LinkrotCheckAllView(View):
     http_method_names = ["head", "post"]
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # TODO: figure out auth
-        # Optionally include previously-marked dead entries in the ring-wide check
+        # Determine if this an authorized request
+        is_authorized = check_auth(
+            webring=get_webring(self.kwargs["ring"]), bearer=request.headers.get("Authorization")
+        )
+        if not is_authorized:
+            return JsonResponse(
+                {"message": "Unable to authorize request."},
+                status=HTTPStatus.FORBIDDEN,
+            )
+
+        # Optionally include previously marked dead entries in the ring-wide check
         include_dead = truthy_str_to_bool(request.GET.get("include_dead", False))
         return JsonResponse(
             {"results": check_all(self.kwargs["ring"], include_dead)}, status=HTTPStatus.OK
@@ -34,7 +44,16 @@ class LinkrotCheckOneView(View):
     http_method_names = ["head", "post"]
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # TODO: figure out auth
+        # Determine if this an authorized request
+        is_authorized = check_auth(
+            webring=get_webring(self.kwargs["ring"]), bearer=request.headers.get("Authorization")
+        )
+        if not is_authorized:
+            return JsonResponse(
+                {"message": "Unable to authorize request."},
+                status=HTTPStatus.FORBIDDEN,
+            )
+
         try:
             entry = Entry.objects.get(instance__slug=self.kwargs["ring"], uuid=self.kwargs["entry"])
             return JsonResponse({"results": [check_one(entry)]}, status=HTTPStatus.OK)
@@ -63,10 +82,18 @@ class LinkrotLinkHistoryView(ListView):
         )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # TODO: figure out auth
-        r: TemplateResponse = super().get(request, *args, **kwargs)
+        # Determine if this an authorized request
+        is_authorized = check_auth(
+            webring=get_webring(self.kwargs["ring"]), bearer=request.headers.get("Authorization")
+        )
+        if not is_authorized:
+            return JsonResponse(
+                {"message": "Unable to authorize request."},
+                status=HTTPStatus.FORBIDDEN,
+            )
 
         # We do not have any history for this entry
+        r: TemplateResponse = super().get(request, *args, **kwargs)
         history: QuerySet = r.context_data["object_list"]
         if not history:
             return JsonResponse(
