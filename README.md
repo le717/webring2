@@ -116,7 +116,8 @@ One way to configure the linkrot check to run automatically is to create a Pytho
 makes the proper request(s) and schedule it to automatically run via some scheduler.
 
 The entire webring can be checked for rotten links by issuing a~~n authenticated~~ `POST` request to
-the `/linkrot/<webring-slug>` endpoint. Dead entries are not included in the check.
+the `/linkrot/<webring-slug>` endpoint. By default, dead entries are not included in the check.
+Provide the `?include_dead=true` query parameter to include them.
 
 Individual entries, including dead entries, can also be checked, by issuing a~~n authenticated~~
 `POST` request to the `/linkrot/<webring-slug>/<uuid>/` endpoint.

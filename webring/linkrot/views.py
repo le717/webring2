@@ -5,6 +5,7 @@ from django.http import HttpRequest, JsonResponse
 from django.template.response import TemplateResponse
 from django.views.generic import ListView, View
 
+from ..core.tools import truthy_str_to_bool
 from .checking import check_all
 from .models import LinkrotHistory
 
@@ -19,8 +20,11 @@ class LinkrotCheckAllView(View):
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         # TODO: figure out auth
-        # TODO: option to include dead entries in check
-        return JsonResponse({"results": check_all(self.kwargs["ring"])}, status=HTTPStatus.OK)
+        # Optionally include previously-marked dead entries in the ring-wide check
+        include_dead = truthy_str_to_bool(request.GET.get("include_dead", False))
+        return JsonResponse(
+            {"results": check_all(self.kwargs["ring"], include_dead)}, status=HTTPStatus.OK
+        )
 
 
 class LinkrotCheckOneView(View):

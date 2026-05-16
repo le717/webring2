@@ -116,9 +116,14 @@ def __record_failure(entry: Entry, history_entry: LinkrotHistory) -> Check:
     return result
 
 
-def check_all(slug: str) -> list[RotResult]:
-    """Check all non-dead links for rotting."""
-    return [check_one(link) for link in Entry.objects.filter(instance__slug=slug, is_dead=False)]
+def check_all(slug: str, include_dead: bool = False) -> list[RotResult]:
+    """Check all entries in a webring for rotting.
+
+    Optionally include previously marked dead entries in the check (default: don't).
+    """
+    return [
+        check_one(link) for link in Entry.objects.filter(instance__slug=slug, is_dead=include_dead)
+    ]
 
 
 def check_one(entry: Entry) -> RotResult:
