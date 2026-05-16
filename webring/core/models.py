@@ -1,6 +1,6 @@
 from secrets import token_hex
 from typing import Any
-from uuid import uuid4
+from uuid import uuid7
 
 from django.db import models
 from django.forms import model_to_dict
@@ -78,7 +78,7 @@ class Entry(SoftDeleteModel):
 
     uuid = models.UUIDField(
         unique=True,
-        default=uuid4,
+        default=uuid7,
         verbose_name="UUID",
         help_text=_("A unique UUID for this entry. This is auto-generated and cannot be changed."),
     )
